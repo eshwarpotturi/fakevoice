@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fake Voice Check: how well it works</title>
+<meta name="description" content="Test results for detecting AI-generated voices, on speakers the detectors had never heard, with clean and phone-quality audio.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="top">
+  <h1>Fake Voice Check</h1>
+  <nav>
+    <a href="index.html">Try it</a>
+    <a href="stats.html" aria-current="page">How well it works</a>
+    <button class="btn toggle" id="theme" aria-label="Switch between light and dark">Dark mode</button>
+  </nav>
+</header>
+<main>
+  <div class="card" style="margin-bottom:1rem">
+    <h2 id="headline" style="font-size:1.5rem; margin:0"></h2>
+    <p class="muted" id="subhead" style="margin:.3rem 0 0"></p>
+  </div>
+  <div class="grid cols-3" id="tiles" style="margin-bottom:1rem"></div>
+  <div class="grid cols-2">
+    <section class="card">
+      <div class="row" style="justify-content:space-between"><h2>Detectors compared</h2><button class="btn" id="t1">Show table</button></div>
+      <p class="small" style="margin:0 0 .3rem">Score from 0 to 1 on speakers never used in training. 0.5 is a coin toss; 1 is perfect. Click a bar for details.</p>
+      <div class="legend"><span><i style="background:var(--series-1)"></i>Clean audio</span><span><i style="background:var(--series-2)"></i>Phone-quality audio</span></div>
+      <div id="chart1"></div>
+    </section>
+    <section class="card">
+      <div class="row" style="justify-content:space-between"><h2 id="h-spk">Speaker by speaker</h2><button class="btn" id="t2">Show table</button></div>
+      <p class="small" style="margin:0 0 .3rem" id="spk-sub"></p>
+      <div id="chart2"></div>
+    </section>
+  </div>
+  <div class="grid cols-2" style="margin-top:1rem">
+    <section class="card"><h2>How we tested</h2><div id="method"></div></section>
+    <section class="card"><h2>What this does not show</h2><div id="caveats"></div></section>
+  </div>
+  <section class="card" style="margin-top:1rem"><h2>Can you trust the percentage?</h2><p class="small" style="margin:0 0 .4rem" id="cal-sub"></p><div id="cal"></div></section>
+</main>
+<div id="tip"></div>
+<dialog id="dlg"><h3 id="dlg-t"></h3><div id="dlg-b"></div><div class="row" style="margin-top:1rem; justify-content:flex-end"><button class="btn" id="dlg-x">Close</button></div></dialog>
+<script src="assets/stats.js"></script>
+</body>
+</html>

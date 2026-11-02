@@ -1,0 +1,682 @@
+{
+ "counts": {
+  "train": 1331,
+  "check": 375,
+  "test": 604,
+  "test_speakers": 12,
+  "train_speakers": 34,
+  "check_speakers": 8
+ },
+ "detectors": [
+  {
+   "id": "wavlm_clean",
+   "name": "WavLM, trained on clean audio",
+   "kind": "trained",
+   "layer": 1,
+   "C": 1.0,
+   "note": "Trained only on clean recordings.",
+   "clean": {
+    "auc": 0.9777711979646445,
+    "eer": 0.08955125674430847,
+    "accuracy": 0.9403973509933775,
+    "fakes_caught_at_5pct_false_alarms": 0.9183006535947712,
+    "auc_95ci": [
+     0.9654439202091893,
+     0.986750798270649
+    ]
+   },
+   "phone": {
+    "auc": 0.9236961003640829,
+    "eer": 0.14739878054129935,
+    "accuracy": 0.8493377483443708,
+    "fakes_caught_at_5pct_false_alarms": 0.6895424836601307,
+    "auc_95ci": [
+     0.8987581227233339,
+     0.9448372350815445
+    ]
+   },
+   "per_speaker_clean": {
+    "Adam Driver": {
+     "auc": 0.9042145593869731,
+     "real": 29,
+     "fake": 27
+    },
+    "Alec Guinness": {
+     "auc": 1.0,
+     "real": 21,
+     "fake": 28
+    },
+    "Arnold Schwarzenegger": {
+     "auc": 1.0,
+     "real": 23,
+     "fake": 23
+    },
+    "Barack Obama": {
+     "auc": 1.0,
+     "real": 26,
+     "fake": 24
+    },
+    "Bill Burr": {
+     "auc": 1.0,
+     "real": 25,
+     "fake": 29
+    },
+    "Donald Trump": {
+     "auc": 1.0,
+     "real": 26,
+     "fake": 27
+    },
+    "George Carlin": {
+     "auc": 1.0,
+     "real": 29,
+     "fake": 26
+    },
+    "Gilbert Gottfried": {
+     "auc": 1.0,
+     "real": 26,
+     "fake": 28
+    },
+    "John Cleese": {
+     "auc": 1.0,
+     "real": 29,
+     "fake": 28
+    },
+    "Kanye West": {
+     "auc": 1.0,
+     "real": 18,
+     "fake": 25
+    },
+    "Mark Zuckerberg": {
+     "auc": 1.0,
+     "real": 25,
+     "fake": 24
+    },
+    "Winston Churchill": {
+     "auc": 1.0,
+     "real": 21,
+     "fake": 17
+    }
+   },
+   "per_speaker_phone": {
+    "Adam Driver": {
+     "auc": 0.5478927203065134,
+     "real": 29,
+     "fake": 27
+    },
+    "Alec Guinness": {
+     "auc": 0.9897959183673469,
+     "real": 21,
+     "fake": 28
+    },
+    "Arnold Schwarzenegger": {
+     "auc": 0.9962192816635161,
+     "real": 23,
+     "fake": 23
+    },
+    "Barack Obama": {
+     "auc": 0.9967948717948718,
+     "real": 26,
+     "fake": 24
+    },
+    "Bill Burr": {
+     "auc": 1.0,
+     "real": 25,
+     "fake": 29
+    },
+    "Donald Trump": {
+     "auc": 0.9173789173789173,
+     "real": 26,
+     "fake": 27
+    },
+    "George Carlin": {
+     "auc": 1.0,
+     "real": 29,
+     "fake": 26
+    },
+    "Gilbert Gottfried": {
+     "auc": 1.0,
+     "real": 26,
+     "fake": 28
+    },
+    "John Cleese": {
+     "auc": 0.9248768472906405,
+     "real": 29,
+     "fake": 28
+    },
+    "Kanye West": {
+     "auc": 1.0,
+     "real": 18,
+     "fake": 25
+    },
+    "Mark Zuckerberg": {
+     "auc": 1.0,
+     "real": 25,
+     "fake": 24
+    },
+    "Winston Churchill": {
+     "auc": 1.0,
+     "real": 21,
+     "fake": 17
+    }
+   },
+   "check_clean_auc": 0.9995
+  },
+  {
+   "id": "wavlm_both",
+   "name": "WavLM, trained on clean and phone-quality audio (used in the demo)",
+   "kind": "trained",
+   "layer": 3,
+   "C": 1.0,
+   "note": "Trained on clean recordings plus phone-quality copies of the same training clips.",
+   "clean": {
+    "auc": 0.9851844540948371,
+    "eer": 0.0794841426503487,
+    "accuracy": 0.9403973509933775,
+    "fakes_caught_at_5pct_false_alarms": 0.9117647058823529,
+    "auc_95ci": [
+     0.9769140972041556,
+     0.991499541124243
+    ]
+   },
+   "phone": {
+    "auc": 0.9768938895468703,
+    "eer": 0.0778062903013555,
+    "accuracy": 0.9354304635761589,
+    "fakes_caught_at_5pct_false_alarms": 0.9052287581699346,
+    "auc_95ci": [
+     0.9648783852019231,
+     0.9859437403156364
+    ]
+   },
+   "per_speaker_clean": {
+    "Adam Driver": {
+     "auc": 0.9923371647509579,
+     "real": 29,
+     "fake": 27
+    },
+    "Alec Guinness": {
+     "auc": 1.0,
+     "real": 21,
+     "fake": 28
+    },
+    "Arnold Schwarzenegger": {
+     "auc": 1.0,
+     "real": 23,
+     "fake": 23
+    },
+    "Barack Obama": {
+     "auc": 0.9967948717948718,
+     "real": 26,
+     "fake": 24
+    },
+    "Bill Burr": {
+     "auc": 1.0,
+     "real": 25,
+     "fake": 29
+    },
+    "Donald Trump": {
+     "auc": 1.0,
+     "real": 26,
+     "fake": 27
+    },
+    "George Carlin": {
+     "auc": 1.0,
+     "real": 29,
+     "fake": 26
+    },
+    "Gilbert Gottfried": {
+     "auc": 1.0,
+     "real": 26,
+     "fake": 28
+    },
+    "John Cleese": {
+     "auc": 1.0,
+     "real": 29,
+     "fake": 28
+    },
+    "Kanye West": {
+     "auc": 1.0,
+     "real": 18,
+     "fake": 25
+    },
+    "Mark Zuckerberg": {
+     "auc": 1.0,
+     "real": 25,
+     "fake": 24
+    },
+    "Winston Churchill": {
+     "auc": 1.0,
+     "real": 21,
+     "fake": 17
+    }
+   },
+   "per_speaker_phone": {
+    "Adam Driver": {
+     "auc": 0.9655172413793103,
+     "real": 29,
+     "fake": 27
+    },
+    "Alec Guinness": {
+     "auc": 1.0,
+     "real": 21,
+     "fake": 28
+    },
+    "Arnold Schwarzenegger": {
+     "auc": 1.0,
+     "real": 23,
+     "fake": 23
+    },
+    "Barack Obama": {
+     "auc": 0.9935897435897436,
+     "real": 26,
+     "fake": 24
+    },
+    "Bill Burr": {
+     "auc": 1.0,
+     "real": 25,
+     "fake": 29
+    },
+    "Donald Trump": {
+     "auc": 1.0,
+     "real": 26,
+     "fake": 27
+    },
+    "George Carlin": {
+     "auc": 1.0,
+     "real": 29,
+     "fake": 26
+    },
+    "Gilbert Gottfried": {
+     "auc": 1.0,
+     "real": 26,
+     "fake": 28
+    },
+    "John Cleese": {
+     "auc": 1.0,
+     "real": 29,
+     "fake": 28
+    },
+    "Kanye West": {
+     "auc": 1.0,
+     "real": 18,
+     "fake": 25
+    },
+    "Mark Zuckerberg": {
+     "auc": 1.0,
+     "real": 25,
+     "fake": 24
+    },
+    "Winston Churchill": {
+     "auc": 1.0,
+     "real": 21,
+     "fake": 17
+    }
+   },
+   "check_clean_auc": 0.9991
+  },
+  {
+   "id": "w2v2_clean",
+   "name": "wav2vec 2.0, trained on clean audio",
+   "kind": "trained",
+   "layer": 4,
+   "C": 1.0,
+   "note": "Trained only on clean recordings.",
+   "clean": {
+    "auc": 0.9914352765714787,
+    "eer": 0.049721454577356605,
+    "accuracy": 0.9536423841059603,
+    "fakes_caught_at_5pct_false_alarms": 0.954248366013072,
+    "auc_95ci": [
+     0.9850430218167164,
+     0.9963818616603274
+    ]
+   },
+   "phone": {
+    "auc": 0.9790323288151951,
+    "eer": 0.06292494626485945,
+    "accuracy": 0.9304635761589404,
+    "fakes_caught_at_5pct_false_alarms": 0.9215686274509803,
+    "auc_95ci": [
+     0.9678385410284329,
+     0.9885739581773942
+    ]
+   },
+   "per_speaker_clean": {
+    "Adam Driver": {
+     "auc": 1.0,
+     "real": 29,
+     "fake": 27
+    },
+    "Alec Guinness": {
+     "auc": 1.0,
+     "real": 21,
+     "fake": 28
+    },
+    "Arnold Schwarzenegger": {
+     "auc": 1.0,
+     "real": 23,
+     "fake": 23
+    },
+    "Barack Obama": {
+     "auc": 0.9935897435897436,
+     "real": 26,
+     "fake": 24
+    },
+    "Bill Burr": {
+     "auc": 1.0,
+     "real": 25,
+     "fake": 29
+    },
+    "Donald Trump": {
+     "auc": 0.9786324786324786,
+     "real": 26,
+     "fake": 27
+    },
+    "George Carlin": {
+     "auc": 1.0,
+     "real": 29,
+     "fake": 26
+    },
+    "Gilbert Gottfried": {
+     "auc": 1.0,
+     "real": 26,
+     "fake": 28
+    },
+    "John Cleese": {
+     "auc": 1.0,
+     "real": 29,
+     "fake": 28
+    },
+    "Kanye West": {
+     "auc": 1.0,
+     "real": 18,
+     "fake": 25
+    },
+    "Mark Zuckerberg": {
+     "auc": 1.0,
+     "real": 25,
+     "fake": 24
+    },
+    "Winston Churchill": {
+     "auc": 1.0,
+     "real": 21,
+     "fake": 17
+    }
+   },
+   "per_speaker_phone": {
+    "Adam Driver": {
+     "auc": 0.9604086845466155,
+     "real": 29,
+     "fake": 27
+    },
+    "Alec Guinness": {
+     "auc": 1.0,
+     "real": 21,
+     "fake": 28
+    },
+    "Arnold Schwarzenegger": {
+     "auc": 1.0,
+     "real": 23,
+     "fake": 23
+    },
+    "Barack Obama": {
+     "auc": 0.9823717948717949,
+     "real": 26,
+     "fake": 24
+    },
+    "Bill Burr": {
+     "auc": 1.0,
+     "real": 25,
+     "fake": 29
+    },
+    "Donald Trump": {
+     "auc": 0.9544159544159544,
+     "real": 26,
+     "fake": 27
+    },
+    "George Carlin": {
+     "auc": 1.0,
+     "real": 29,
+     "fake": 26
+    },
+    "Gilbert Gottfried": {
+     "auc": 1.0,
+     "real": 26,
+     "fake": 28
+    },
+    "John Cleese": {
+     "auc": 0.9544334975369458,
+     "real": 29,
+     "fake": 28
+    },
+    "Kanye West": {
+     "auc": 1.0,
+     "real": 18,
+     "fake": 25
+    },
+    "Mark Zuckerberg": {
+     "auc": 1.0,
+     "real": 25,
+     "fake": 24
+    },
+    "Winston Churchill": {
+     "auc": 1.0,
+     "real": 21,
+     "fake": 17
+    }
+   },
+   "check_clean_auc": 0.9999
+  },
+  {
+   "id": "off:MelodyMachine/Deepfake-audio-detection-V2",
+   "name": "Ready-made detector (Deepfake-audio-detection-V2)",
+   "kind": "off-the-shelf",
+   "layer": null,
+   "note": "Downloaded from the Hugging Face model hub (MelodyMachine/Deepfake-audio-detection-V2). We did not train it.",
+   "clean": {
+    "auc": 0.4405130060972935,
+    "eer": 0.4950103083739088,
+    "accuracy": 0.445364238410596,
+    "fakes_caught_at_5pct_false_alarms": 0.0032679738562091504,
+    "auc_95ci": [
+     0.3897161596119929,
+     0.48405359102186407
+    ]
+   },
+   "phone": {
+    "auc": 0.6699291573452647,
+    "eer": 0.3526450848795894,
+    "accuracy": 0.6142384105960265,
+    "fakes_caught_at_5pct_false_alarms": 0.0,
+    "auc_95ci": [
+     0.6268450782025965,
+     0.708286223651647
+    ]
+   },
+   "per_speaker_clean": {
+    "Adam Driver": {
+     "auc": 0.2630906768837803,
+     "real": 29,
+     "fake": 27
+    },
+    "Alec Guinness": {
+     "auc": 0.3358843537414966,
+     "real": 21,
+     "fake": 28
+    },
+    "Arnold Schwarzenegger": {
+     "auc": 0.612476370510397,
+     "real": 23,
+     "fake": 23
+    },
+    "Barack Obama": {
+     "auc": 0.40224358974358976,
+     "real": 26,
+     "fake": 24
+    },
+    "Bill Burr": {
+     "auc": 0.9917241379310344,
+     "real": 25,
+     "fake": 29
+    },
+    "Donald Trump": {
+     "auc": 0.5056980056980057,
+     "real": 26,
+     "fake": 27
+    },
+    "George Carlin": {
+     "auc": 0.6007957559681698,
+     "real": 29,
+     "fake": 26
+    },
+    "Gilbert Gottfried": {
+     "auc": 0.0013736263736263726,
+     "real": 26,
+     "fake": 28
+    },
+    "John Cleese": {
+     "auc": 0.07019704433497537,
+     "real": 29,
+     "fake": 28
+    },
+    "Kanye West": {
+     "auc": 0.9955555555555555,
+     "real": 18,
+     "fake": 25
+    },
+    "Mark Zuckerberg": {
+     "auc": 0.03166666666666667,
+     "real": 25,
+     "fake": 24
+    },
+    "Winston Churchill": {
+     "auc": 0.73109243697479,
+     "real": 21,
+     "fake": 17
+    }
+   },
+   "per_speaker_phone": {
+    "Adam Driver": {
+     "auc": 0.4342273307790549,
+     "real": 29,
+     "fake": 27
+    },
+    "Alec Guinness": {
+     "auc": 0.6454081632653061,
+     "real": 21,
+     "fake": 28
+    },
+    "Arnold Schwarzenegger": {
+     "auc": 0.9621928166351605,
+     "real": 23,
+     "fake": 23
+    },
+    "Barack Obama": {
+     "auc": 0.5512820512820512,
+     "real": 26,
+     "fake": 24
+    },
+    "Bill Burr": {
+     "auc": 0.9806896551724138,
+     "real": 25,
+     "fake": 29
+    },
+    "Donald Trump": {
+     "auc": 0.4650997150997151,
+     "real": 26,
+     "fake": 27
+    },
+    "George Carlin": {
+     "auc": 0.993368700265252,
+     "real": 29,
+     "fake": 26
+    },
+    "Gilbert Gottfried": {
+     "auc": 0.3489010989010989,
+     "real": 26,
+     "fake": 28
+    },
+    "John Cleese": {
+     "auc": 0.8916256157635467,
+     "real": 29,
+     "fake": 28
+    },
+    "Kanye West": {
+     "auc": 0.9411111111111111,
+     "real": 18,
+     "fake": 25
+    },
+    "Mark Zuckerberg": {
+     "auc": 0.07999999999999999,
+     "real": 25,
+     "fake": 24
+    },
+    "Winston Churchill": {
+     "auc": 0.938375350140056,
+     "real": 21,
+     "fake": 17
+    }
+   },
+   "check_clean_auc": 0.4084
+  }
+ ],
+ "best": "wavlm_both",
+ "headline": "Our detector was right on 94% of clips on clean audio and 94% over a simulated phone line, on people it had never heard",
+ "subhead": "A ready-made detector from the Hugging Face model hub was right on only 45% of the same clips. Tested on 604 clips from 12 people, half real and half AI-generated.",
+ "method_html": "\n<ol style=\"margin:0; padding-left:1.2rem\">\n<li><b>Data.</b> The In-the-Wild collection: real and AI-faked recordings of 54 public figures, gathered from the internet by researchers at Fraunhofer AISEC. We made no fake audio ourselves.</li>\n<li><b>Sample.</b> Up to 30 real and 30 fake clips of 6 seconds per person: 2,310 clips in all.</li>\n<li><b>Split by person.</b> 34 people to train, 8 to choose settings, and 12 held back for the final test. No test person was used for any choice.</li>\n<li><b>Detectors.</b> WavLM and wav2vec 2.0 listen to the audio; a small classifier on top learns real against fake. One ready-made detector was tested as downloaded.</li>\n<li><b>Phone line.</b> Narrow band (300 to 3,400 Hz), 8 kHz sampling and standard phone compression. The demo has the same option.</li>\n<li><b>Score.</b> The chance that a random fake clip is rated more fake than a random real clip. 0.5 is guessing; 1 is perfect.</li>\n</ol>",
+ "caveats_html": "\n<ul style=\"margin:0; padding-left:1.2rem\">\n<li><b>Recording differences.</b> In this collection, real and fake clips come from different sources, so part of any score may reflect how a clip was recorded, not whether the voice is synthetic. A trivial check using only loudness and tone balance scores 0.62, so some of the score may come from this.</li>\n<li><b>One collection.</b> Training and testing use the same kind of recordings. New voice generators and new recording settings are untested, and the ready-made detector shows how far results can fall.</li>\n<li><b>Real calls are mostly genuine.</b> Our test is half fake. If only 1 call in 1,000 is fake, a 5% false-alarm rate wrongly flags about 50 genuine callers for each fake caught.</li>\n<li><b>Few people.</b> 12 test people with about 50 clips each. Differences between people are not reliable.</li>\n<li><b>Simulated phone line.</b> Real calls add dropouts, noise and other compression.</li>\n<li><b>Voices and languages.</b> The people are mostly English-speaking figures from the US and UK. Indian voices and other languages are not yet tested.</li>\n<li><b>A signal, not proof.</b> Use the percentage alongside other checks, such as a call-back.</li>\n</ul>",
+ "calibration": {
+  "test_bins": [
+   {
+    "lo": 0,
+    "hi": 0.05,
+    "n": 547,
+    "observed_fake": 0.0603290676416819,
+    "predicted": 0.005693807210400982
+   },
+   {
+    "lo": 0.05,
+    "hi": 0.2,
+    "n": 64,
+    "observed_fake": 0.296875,
+    "predicted": 0.0929868291716118
+   },
+   {
+    "lo": 0.2,
+    "hi": 0.4,
+    "n": 23,
+    "observed_fake": 0.30434782608695654,
+    "predicted": 0.3005279403538516
+   },
+   {
+    "lo": 0.4,
+    "hi": 0.6,
+    "n": 22,
+    "observed_fake": 0.5,
+    "predicted": 0.4958116515478508
+   },
+   {
+    "lo": 0.6,
+    "hi": 0.8,
+    "n": 25,
+    "observed_fake": 0.8,
+    "predicted": 0.7189996892504545
+   },
+   {
+    "lo": 0.8,
+    "hi": 0.95,
+    "n": 62,
+    "observed_fake": 0.9193548387096774,
+    "predicted": 0.8854554532379258
+   },
+   {
+    "lo": 0.95,
+    "hi": 1.0,
+    "n": 465,
+    "observed_fake": 1.0,
+    "predicted": 0.9948512775411382
+   }
+  ],
+  "note": "When the detector sounded sure a clip was human (under 5%), about 6 in 100 were actually fake. The demo therefore never shows less than 5% AI. When it sounded sure a clip was fake (over 95%), all of them were."
+ }
+}

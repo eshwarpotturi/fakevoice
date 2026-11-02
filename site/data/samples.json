@@ -1,0 +1,52 @@
+[
+ {
+  "file": "data/samples/clip-a.wav",
+  "name": "Arnold Schwarzenegger (clip A)",
+  "truth": "real"
+ },
+ {
+  "file": "data/samples/clip-b.wav",
+  "name": "John Cleese (clip B)",
+  "truth": "real"
+ },
+ {
+  "file": "data/samples/clip-c.wav",
+  "name": "Arnold Schwarzenegger (clip C)",
+  "truth": "fake"
+ },
+ {
+  "file": "data/samples/clip-d.wav",
+  "name": "Barack Obama (clip D)",
+  "truth": "real"
+ },
+ {
+  "file": "data/samples/clip-e.wav",
+  "name": "John Cleese (clip E)",
+  "truth": "fake"
+ },
+ {
+  "file": "data/samples/clip-f.wav",
+  "name": "Alec Guinness (clip F)",
+  "truth": "real"
+ },
+ {
+  "file": "data/samples/clip-g.wav",
+  "name": "Donald Trump (clip G)",
+  "truth": "fake"
+ },
+ {
+  "file": "data/samples/clip-h.wav",
+  "name": "Barack Obama (clip H)",
+  "truth": "fake"
+ },
+ {
+  "file": "data/samples/clip-i.wav",
+  "name": "Donald Trump (clip I)",
+  "truth": "real"
+ },
+ {
+  "file": "data/samples/clip-j.wav",
+  "name": "Alec Guinness (clip J)",
+  "truth": "fake"
+ }
+]

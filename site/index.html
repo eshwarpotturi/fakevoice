@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fake Voice Check</title>
+<meta name="description" content="Play a recording and see how likely it is to be an AI-generated voice. Runs in your browser; nothing is uploaded.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="top">
+  <h1>Fake Voice Check</h1>
+  <nav>
+    <a href="index.html" aria-current="page">Try it</a>
+    <a href="stats.html">How well it works</a>
+    <button class="btn toggle" id="theme" aria-label="Switch between light and dark">Dark mode</button>
+  </nav>
+</header>
+<main>
+  <div class="grid cols-demo">
+    <section class="card" aria-labelledby="h-in">
+      <h2 id="h-in">1. Choose a recording</h2>
+      <div class="drop" id="drop">
+        <p style="margin:.2rem 0 .6rem">Drop an audio or video file here</p>
+        <div class="row" style="justify-content:center">
+          <button class="btn primary" id="pick">Choose a file</button>
+          <button class="btn" id="rec">Record with microphone</button>
+        </div>
+        <input type="file" id="file" accept="audio/*,video/*" hidden>
+      </div>
+      <h2 style="margin-top:1rem">Or try a sample</h2>
+      <p class="small" style="margin:0 0 .3rem">The answer is shown after the check, so you can compare.</p>
+      <div class="samples" id="samples"></div>
+      <label class="row" style="margin-top:.9rem; gap:.5rem">
+        <input type="checkbox" id="phone"> <span>Play it through a simulated phone line first</span>
+      </label>
+      <audio id="player" controls style="width:100%; margin-top:.8rem"></audio>
+      <div class="status" id="status" role="status">Loading the detector…</div>
+    </section>
+
+    <section class="card" aria-labelledby="h-out">
+      <h2 id="h-out">2. Result</h2>
+      <div id="empty" class="muted">Choose a recording to see how likely it is to be AI-generated.</div>
+      <div id="result" hidden>
+        <div class="row" style="align-items:baseline; gap:1rem">
+          <div class="verdict" id="verdict"></div>
+          <div class="muted" id="verdict-sub"></div>
+        </div>
+        <div class="bar2" id="bar" aria-label="Share of AI-generated against human"></div>
+        <div class="legend"><span><i style="background:var(--human)"></i>Human</span><span><i style="background:var(--ai)"></i>AI-generated</span></div>
+        <h2 style="margin-top:.8rem">Across the recording</h2>
+        <p class="small" style="margin:0 0 .3rem">Each bar is a 6-second slice. Taller means more likely AI-generated. Click a bar for details.</p>
+        <div class="timeline" id="timeline"></div>
+        <div id="truth" class="muted" style="margin-top:.7rem"></div>
+      </div>
+      <div class="note" style="margin-top:1rem" id="reliability"></div>
+    </section>
+  </div>
+</main>
+<div id="tip"></div>
+<dialog id="dlg"><h3 id="dlg-t"></h3><div id="dlg-b"></div><div class="row" style="margin-top:1rem; justify-content:flex-end"><button class="btn" id="dlg-x">Close</button></div></dialog>
+<script src="vendor/ort.wasm.min.js"></script>
+<script src="assets/demo.js"></script>
+</body>
+</html>
