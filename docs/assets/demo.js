@@ -209,8 +209,8 @@ async function loadSample(s) {
 // ---------- start ----------
 (async function init() {
   try {
-    cfg = await (await fetch("model/config.json")).json();
-    samples = await (await fetch("data/samples.json")).json();
+    cfg = await (await fetch("model/config.json", { cache: "no-cache" })).json();
+    samples = await (await fetch("data/samples.json", { cache: "no-cache" })).json();
     const box = $("samples");
     samples.forEach((s, i) => {
       const b = document.createElement("button"); b.className = "btn";

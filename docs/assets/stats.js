@@ -35,7 +35,7 @@ function barPath(x, y, w, h, r) {
 }
 
 let D;
-fetch("data/results.json").then((r) => r.json()).then((d) => { D = d; render(); });
+fetch("data/results.json", { cache: "no-cache" }).then((r) => r.json()).then((d) => { D = d; render(); });
 
 function render() {
   const best = D.detectors.find((d) => d.id === D.best);
