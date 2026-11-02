@@ -24,10 +24,10 @@ for i, (p, lab, m) in enumerate(picks):
     letter = chr(97 + i)
     fn = f"data/samples/clip-{letter}.wav"
     x = np.load(m["npy"]).astype(np.float32) / 32767
-    sf.write("site/" + fn, x, 16000, subtype="PCM_16")
+    sf.write("docs/" + fn, x, 16000, subtype="PCM_16")
     truth = "real" if lab == "bona-fide" else "fake"
     public.append({"file": fn, "name": f"{p} (clip {letter.upper()})", "truth": truth})
     out.append({"file": fn, "source": m["file"], "speaker": p, "truth": truth})
-json.dump(public, open("site/data/samples.json", "w"), indent=1)
+json.dump(public, open("docs/data/samples.json", "w"), indent=1)
 json.dump(out, open("work/samples_source.json", "w"), indent=1)
 print([(o["speaker"], o["truth"]) for o in out])

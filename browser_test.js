@@ -6,7 +6,7 @@ const { chromium } = require('playwright');
   const logs = [];
   p.on('console', m => { if (['error','warning'].includes(m.type())) logs.push(m.type()+': '+m.text()); });
   p.on('pageerror', e => logs.push('pageerror: '+e.message));
-  await p.goto('http://localhost:8765/index.html');
+  await p.goto('http://localhost:8766/index.html');
   await p.waitForFunction(() => /^Ready|could not/.test(document.getElementById('status').textContent), null, { timeout: 180000 });
   console.log('status:', await p.textContent('#status'));
   const n = (await p.$$('#samples button')).length;
@@ -25,7 +25,7 @@ const { chromium } = require('playwright');
   }
   console.log(`samples right: clean ${right}/${n}, phone line ${rightPhone}/${n}`);
   await p.click('#theme'); await p.screenshot({ path: 'logs/demo_dark.png' });
-  await p.goto('http://localhost:8765/stats.html'); await p.waitForTimeout(1500);
+  await p.goto('http://localhost:8766/stats.html'); await p.waitForTimeout(1500);
   await p.screenshot({ path: 'logs/stats.png', fullPage: true });
   await p.click('.tile >> nth=0'); await p.waitForTimeout(300); await p.screenshot({ path: 'logs/stats_popup.png' }); await p.click('#dlg-x');
   await p.click('#t1'); await p.waitForTimeout(200);

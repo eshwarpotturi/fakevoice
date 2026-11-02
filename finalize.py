@@ -63,7 +63,7 @@ R["caveats_html"] = f"""
 
 CAL = json.load(open("work/calibration.json"))
 R["calibration"] = {"test_bins": CAL["test_bins"], "note": "When the detector sounded sure a clip was human (under 5%), about 6 in 100 were actually fake. The demo therefore never shows less than 5% AI. When it sounded sure a clip was fake (over 95%), all of them were."}
-json.dump(R, open("site/data/results.json", "w"), indent=1)
+json.dump(R, open("docs/data/results.json", "w"), indent=1)
 
 cfg = {
     "window_sec": 6, "max_windows": 12, "floor": 0.05, "ceil": 0.99,
@@ -72,6 +72,6 @@ cfg = {
                          f"and {pc(used['phone']['accuracy'])} over a simulated phone line. It can still be fooled, and it has not been tested on Indian voices or languages other than English. "
                          "Treat the percentage as one signal, not proof. <a href=\"stats.html\">See how well it works</a>."),
 }
-json.dump(cfg, open("site/model/config.json", "w"), indent=1)
-print("wrote site/data/results.json and site/model/config.json")
+json.dump(cfg, open("docs/model/config.json", "w"), indent=1)
+print("wrote docs/data/results.json and docs/model/config.json")
 print(json.dumps(cfg["platt"]))

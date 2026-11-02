@@ -34,7 +34,7 @@ The percentage in the demo is calibrated on people not used for the test. When t
 
 ## Data
 
-[In-the-Wild](https://deepfake-total.com/in_the_wild) (Müller et al., 2022, Apache 2.0): real and AI-faked recordings of 54 public figures, collected from the internet by the dataset's researchers. We made no fake audio. The sample clips in `site/data/samples` are 6-second excerpts from it.
+[In-the-Wild](https://deepfake-total.com/in_the_wild) (Müller et al., 2022, Apache 2.0): real and AI-faked recordings of 54 public figures, collected from the internet by the dataset's researchers. We made no fake audio. The sample clips in `docs/data/samples` are 6-second excerpts from it.
 
 > Müller, Czempin, Diekmann, Froghyar, Böttinger. *Does Audio Deepfake Detection Generalize?* Interspeech 2022.
 
@@ -53,7 +53,7 @@ Run `./run_all.sh` to rebuild the results from the extracted features.
 ## Run locally
 
 ```bash
-cd site
+cd docs
 python3 -m http.server 8000
 # open http://localhost:8000
 ```
