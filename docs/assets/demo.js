@@ -74,6 +74,28 @@ function toWavBlob(x) {
 }
 
 // ---------- model ----------
+let loadingModel = null;
+async function loadModel() {
+  const r = await fetch("model/detector.onnx");
+  if (!r.ok) throw new Error("model file not found (" + r.status + ")");
+  const total = +r.headers.get("content-length") || 0, reader = r.body.getReader(), chunks = [];
+  let got = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value); got += value.length;
+    $("status").textContent = `Loading the detector… ${(got / 1e6).toFixed(0)} of ${total ? (total / 1e6).toFixed(0) : "about 58"} MB`;
+  }
+  const buf = new Uint8Array(got); let o = 0;
+  for (const c of chunks) { buf.set(c, o); o += c.length; }
+  ort.env.wasm.wasmPaths = new URL("vendor/", location.href).href; ort.env.wasm.numThreads = 1;
+  return ort.InferenceSession.create(buf, { executionProviders: ["wasm"] });
+}
+async function ensureSession() {
+  if (session) return session;
+  if (!loadingModel) loadingModel = loadModel().then((s) => (session = s)).finally(() => { loadingModel = null; });
+  return loadingModel;
+}
 const sigmoid = (z) => 1 / (1 + Math.exp(-z));
 async function scoreWindow(x) {
   const t = new ort.Tensor("float32", x, [1, x.length]);
@@ -93,6 +115,8 @@ const rms = (a) => Math.sqrt(a.reduce((s, v) => s + v * v, 0) / a.length);
 async function analyse(x, truth, label) {
   if (busy) return; busy = true;
   try {
+    try { await ensureSession(); }
+    catch (e) { console.error(e); $("status").textContent = "The detector could not start in this browser (" + (e && e.message ? e.message : e) + "). Please reload the page, or try another browser."; return; }
     $("status").textContent = "Checking…";
     if ($("phone").checked) { $("status").textContent = "Simulating a phone line…"; x = await phoneLine(x); }
     $("player").src = URL.createObjectURL(toWavBlob(x));
@@ -114,7 +138,7 @@ async function analyse(x, truth, label) {
     $("status").textContent = "Done.";
   } catch (e) {
     console.error(e);
-    $("status").textContent = "Sorry, that file could not be read. Try a WAV or MP3 file, or a short MP4 video.";
+    $("status").textContent = "The check failed (" + (e && e.message ? e.message : e) + "). Please try again or use a different file.";
   } finally { busy = false; }
 }
 
@@ -153,7 +177,7 @@ async function fromFile(file) {
   catch (e) { console.error(e); $("status").textContent = "Sorry, that file could not be read. Try a WAV or MP3 file, or a short MP4 video."; }
 }
 $("pick").onclick = () => $("file").click();
-$("file").onchange = (e) => e.target.files[0] && fromFile(e.target.files[0]);
+$("file").onchange = (e) => { const f = e.target.files[0]; e.target.value = ""; if (f) fromFile(f); };
 const drop = $("drop");
 ["dragenter", "dragover"].forEach((n) => drop.addEventListener(n, (e) => { e.preventDefault(); drop.classList.add("over"); }));
 ["dragleave", "drop"].forEach((n) => drop.addEventListener(n, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
@@ -193,8 +217,10 @@ async function loadSample(s) {
       b.onclick = () => loadSample(s); box.appendChild(b);
     });
     $("reliability").innerHTML = cfg.reliability_html;
-    ort.env.wasm.wasmPaths = new URL("vendor/", location.href).href; ort.env.wasm.numThreads = 1;
-    session = await ort.InferenceSession.create("model/detector.onnx", { executionProviders: ["wasm"] });
+    await ensureSession();
     $("status").textContent = "Ready. Choose a recording.";
-  } catch (e) { console.error(e); $("status").textContent = "The detector could not be loaded. Please reload the page."; }
+  } catch (e) {
+    console.error(e);
+    $("status").textContent = "The detector has not loaded yet (" + (e && e.message ? e.message : e) + "). It will try again when you choose a recording.";
+  }
 })();
