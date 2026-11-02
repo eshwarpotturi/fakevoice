@@ -131,6 +131,33 @@ function tablePerson(host) {
   host.innerHTML = `<table class="data"><tr><th>Person</th><th>Score</th><th>Real clips</th><th>Fake clips</th></tr>${personRows().map((r) => `<tr><td>${r.n}</td><td>${f2(r.auc)}</td><td>${r.real}</td><td>${r.fake}</td></tr>`).join("")}</table>`;
 }
 
+// Who-is-it accuracy with no training: 12 people (blue) and 49 people (orange), against guessing.
+function vizFingerprint(host) {
+  host.innerHTML = "";
+  const rows = D.fingerprint, W = 780, left = 230, right = 70, top = 8, rowH = 74, H = top + rows.length * rowH + 40;
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, width: "100%", role: "img", "aria-label": "How often each embedding named the right person" }, host);
+  const x = (v) => left + v * (W - left - right);
+  [0, 0.5, 1].forEach((v) => {
+    el("line", { x1: x(v), x2: x(v), y1: top, y2: H - 32, stroke: "var(--line)", "stroke-dasharray": v === 0.5 ? "5 5" : "" }, svg);
+    const t = el("text", { x: x(v), y: H - 12, "text-anchor": "middle" }, svg); t.textContent = Math.round(v * 100) + "%";
+  });
+  rows.forEach((d, i) => {
+    const y0 = top + i * rowH;
+    const lab = el("text", { x: left - 12, y: y0 + 34, "text-anchor": "end", style: "font-size:14px" }, svg); lab.textContent = d.name;
+    [[d.who12, "var(--series-1)", `${d.people12} people`], [d.who49, "var(--series-2)", `${d.people49} people`]].forEach(([v, col, txt], j) => {
+      const y = y0 + 6 + j * 28;
+      el("path", { d: barPath(x(0), y, Math.max(2, x(v) - x(0)), 24, 5), fill: col }, svg);
+      const t = el("text", { x: x(v) + 8, y: y + 17, class: "val", style: "font-size:15px" }, svg); t.textContent = pct(v);
+      const hit = el("rect", { x: x(0), y: y - 2, width: W - left - right, height: 28, fill: "transparent", class: "bar-hit" }, svg);
+      const html = `<b>${d.name}</b><br>Named the right person ${pct(v)} of the time among ${txt}<br>Guessing: ${pct(1 / (txt.startsWith("12") ? d.people12 : d.people49))}`;
+      hit.addEventListener("mousemove", (e) => showTip(e, html)); hit.addEventListener("mouseleave", hideTip);
+    });
+  });
+}
+function tableFingerprint(host) {
+  host.innerHTML = `<table class="data"><tr><th>Embedding</th><th>Right, 12 people</th><th>Right, 49 people</th><th>Same person? wrong</th></tr>${D.fingerprint.map((d) => `<tr><td>${d.name}</td><td>${pct(d.who12)} (${d.clips12} clips)</td><td>${pct(d.who49)} (${d.clips49} clips)</td><td>${pct(d.same_eer)}</td></tr>`).join("")}</table>`;
+}
+
 // What the detector said (tick) against what the clips really were (bar).
 function vizCal(host) {
   host.innerHTML = "";
@@ -189,13 +216,17 @@ function render() {
     { q: "Can you trust the percentage?", hero: pct(lo.observed_fake), heroClass: "bad",
       cap: `of clips it was sure were human (under 5% AI) were fake. Of those it was sure were fake (over 95%): ${hi.observed_fake >= 0.995 ? "every one" : pct(hi.observed_fake)}.`,
       note: "So the demo never shows less than 5% AI.", cal: true, title: "What it said, against what was true" },
+    { q: "One more question: can embeddings fingerprint a voice?", hero: pct(D.fingerprint[0].who12),
+      cap: `Gemini's embeddings named the right person among ${D.fingerprint[0].people12} people, with no training. Among ${D.fingerprint[0].people49}, ${pct(D.fingerprint[0].who49)}.`,
+      note: `Rough, not precise: for "same person?", it was wrong ${pct(D.fingerprint[0].same_eer)} of the time. Clips of one person may share a recording source, which flatters these numbers.`,
+      fp: true, title: "Named the right person, no training" },
   ];
 
   const host = $("chapters"); host.innerHTML = "";
   chapters.forEach((c) => {
     const sec = document.createElement("section"); sec.className = "chapter";
     sec.innerHTML = `<div><h3 class="q">${c.q}</h3><div class="hero ${c.heroClass || ""}">${c.hero}</div><p class="cap">${c.cap}</p>${c.note ? `<p class="note">${c.note}</p>` : ""}</div>
-      <div class="card"><div class="vizhead"><span>${c.title}</span>${c.viz && !c.rows ? "" : '<button class="btn tb">Show table</button>'}</div>${c.rows ? '<div class="legend"><span><i style="background:var(--series-1)"></i>Clean audio</span><span><i style="background:var(--series-2)"></i>Phone-quality audio</span></div>' : ""}<div class="viz"></div></div>`;
+      <div class="card"><div class="vizhead"><span>${c.title}</span>${c.viz && !c.rows ? "" : '<button class="btn tb">Show table</button>'}</div>${c.rows ? '<div class="legend"><span><i style="background:var(--series-1)"></i>Clean audio</span><span><i style="background:var(--series-2)"></i>Phone-quality audio</span></div>' : ""}${c.fp ? '<div class="legend"><span><i style="background:var(--series-1)"></i>12 people</span><span><i style="background:var(--series-2)"></i>49 people</span></div>' : ""}<div class="viz"></div></div>`;
     host.appendChild(sec);
     const viz = sec.querySelector(".viz"), btn = sec.querySelector(".tb");
     let chart, table;
@@ -203,6 +234,7 @@ function render() {
     if (c.rows) { chart = () => vizAccuracy(viz, c.rows); table = () => tableAccuracy(viz, c.rows); }
     if (c.person) { chart = () => vizPerson(viz); table = () => tablePerson(viz); }
     if (c.cal) { chart = () => vizCal(viz); table = () => tableCal(viz); }
+    if (c.fp) { chart = () => vizFingerprint(viz); table = () => tableFingerprint(viz); }
     chart();
     if (btn && table) { let t = false; btn.onclick = () => { t = !t; btn.textContent = t ? "Show chart" : "Show table"; t ? table() : chart(); }; }
   });

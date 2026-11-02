@@ -831,5 +831,29 @@
    }
   ],
   "note": "When the detector sounded sure a clip was human (under 5%), about 6 in 100 were actually fake. The demo therefore never shows less than 5% AI. When it sounded sure a clip was fake (over 95%), all of them were."
- }
+ },
+ "fingerprint": [
+  {
+   "name": "Gemini Embedding 2",
+   "who12": 0.8739495798319328,
+   "people12": 12,
+   "clips12": 238,
+   "who49": 0.6713615023474179,
+   "people49": 49,
+   "clips49": 852,
+   "same_auc": 0.8481190288157854,
+   "same_eer": 0.234769926213525
+  },
+  {
+   "name": "WavLM, third layer",
+   "who12": 0.8907563025210085,
+   "people12": 12,
+   "clips12": 238,
+   "who49": 0.8673708920187794,
+   "people49": 49,
+   "clips49": 852,
+   "same_auc": 0.8895691418509546,
+   "same_eer": 0.18274401071525775
+  }
+ ]
 }

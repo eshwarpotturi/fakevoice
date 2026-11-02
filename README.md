@@ -66,7 +66,7 @@ The demo page's phone-line effect is a close approximation of the one used here,
 4. `train2.py`: trains a small classifier on top. Layer and settings are chosen on the check people only; the test people are used once, for the final numbers.
 5. `calibrate.py`: turns the score into a percentage using held-out folds of the training people.
 6. `export_onnx.py`, `shrink_onnx.py`: export the chosen detector as one browser file (weights stored at half precision).
-7. `finalize.py`: writes the data for the two web pages. `shortcut.py` runs the recording-differences check. `make_samples.py` picks the demo clips at random.
+7. `fingerprint.py`: tests whether embeddings alone can name a speaker, with no training. `finalize.py`: writes the data for the two web pages. `shortcut.py` runs the recording-differences check. `make_samples.py` picks the demo clips at random.
 
 Run `./run_all.sh` to rebuild the results from the extracted features.
 

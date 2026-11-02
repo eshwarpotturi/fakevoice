@@ -60,6 +60,7 @@ R["caveats_html"] = f"""
 
 CAL = json.load(open("work/calibration.json"))
 R["calibration"] = {"test_bins": CAL["test_bins"], "note": "When the detector sounded sure a clip was human (under 5%), about 6 in 100 were actually fake. The demo therefore never shows less than 5% AI. When it sounded sure a clip was fake (over 95%), all of them were."}
+R["fingerprint"] = json.load(open("work/fingerprint.json"))
 json.dump(R, open("docs/data/results.json", "w"), indent=1)
 
 cfg = {
