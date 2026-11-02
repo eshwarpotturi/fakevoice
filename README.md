@@ -40,7 +40,7 @@ A small test we ran (one person, three clones, an open-model clone, not the olde
 | Real recording | called human | called human |
 | 3 clones | all 3 caught | 1 of 3 caught |
 
-Three clips is far too few to give a rate. It shows that modern clones can slip through over a phone line, which the 12-person test above does not capture. No voice recordings or clones are stored in this repository.
+The demo page's phone-line effect is a close approximation of the one used here, so its numbers differ a little: there, 2 of the 3 clones were caught over the phone line and 1 was unsure. Three clips is far too few to give a rate. It shows that modern clones can slip through over a phone line, which the 12-person test above does not capture. The demo page includes the owner's own recording and the three clones as samples, shared with their permission. They are the only voice recordings of a private person in this repository.
 
 ## What this does not show
 

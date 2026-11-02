@@ -1,5 +1,25 @@
 [
  {
+  "file": "data/samples/eswar-real.wav",
+  "name": "Eswar: real recording (32 s)",
+  "truth": "real"
+ },
+ {
+  "file": "data/samples/eswar-clone-1.wav",
+  "name": "Eswar: AI clone 1",
+  "truth": "fake"
+ },
+ {
+  "file": "data/samples/eswar-clone-2.wav",
+  "name": "Eswar: AI clone 2",
+  "truth": "fake"
+ },
+ {
+  "file": "data/samples/eswar-clone-3.wav",
+  "name": "Eswar: AI clone 3",
+  "truth": "fake"
+ },
+ {
   "file": "data/samples/clip-a.wav",
   "name": "Arnold Schwarzenegger (clip A)",
   "truth": "real"
