@@ -93,3 +93,12 @@ dialog { border: 1px solid var(--line); border-radius: 12px; background: var(--s
 dialog::backdrop { background: rgba(0,0,0,.45); }
 dialog h3 { margin: 0 0 .5rem; }
 .toggle { margin-left: .4rem; }
+
+.rf { display: inline-block; min-width: 1.5em; text-align: center; font-weight: 700; font-size: .75rem; border-radius: 5px; padding: .05rem .3rem; margin-right: .35rem; color: #fff; }
+.rf.r { background: var(--human); } .rf.f { background: var(--ai); }
+.story h3 { font-size: 1.35rem; margin: 0 0 .3rem; }
+.story p { margin: .3rem 0; }
+.story .lead { font-size: 1.05rem; }
+.story .num { font-size: 2.2rem; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+.story .twist { border-left: 4px solid var(--series-2); padding-left: .8rem; margin: .6rem 0; }
+.closing { font-size: 1.15rem; font-weight: 600; text-align: center; padding: .6rem 0 0; }

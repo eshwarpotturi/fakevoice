@@ -39,8 +39,7 @@ fetch("data/results.json").then((r) => r.json()).then((d) => { D = d; render(); 
 
 function render() {
   const best = D.detectors.find((d) => d.id === D.best);
-  $("headline").textContent = D.headline;
-  $("subhead").textContent = D.subhead;
+  story();
 
   // tiles
   const tiles = [
@@ -63,6 +62,32 @@ function render() {
   $("caveats").innerHTML = D.caveats_html;
   $("t1").onclick = () => toggle("chart1", "t1", chart1, table1);
   $("t2").onclick = () => toggle("chart2", "t2", chart2, table2);
+}
+// The story: one question per section, a plain answer with the number, then the evidence below it.
+function story() {
+  const g = (id) => D.detectors.find((d) => d.id === id);
+  const used = g("wavlm_both"), cl = g("wavlm_clean"), w2 = g("w2v2_clean"), gm = g("gemini_clean");
+  const rd = D.detectors.find((d) => d.kind === "off-the-shelf");
+  const n = D.counts, B = (t) => `<b>${t}</b>`;
+  const set = (id, html) => { $(id).innerHTML = html; };
+  set("headline", "Can you tell a cloned voice from a real one?");
+  set("subhead", "A caller sounds just like your customer, and the voice matches the one on file. We tested whether a detector can still tell it is a fake, on people it had never heard, even over a phone line.");
+  set("q1", "Can a detector catch fakes of people it has never heard?");
+  set("a1", `Mostly, yes. It was right on ${B(pct(used.clean.accuracy))} of ${n.test} clips from ${n.test_speakers} people held out of training. Half the clips were real and half were fake.`);
+  set("q2", "Does a phone line break it?");
+  set("a2", `It can. A WavLM detector trained on clean audio fell from ${B(pct(cl.clean.accuracy))} to ${B(pct(cl.phone.accuracy))} over a simulated phone line. Trained on phone-quality copies too, it held at ${B(pct(used.phone.accuracy))}. A wav2vec 2.0 detector trained on clean audio only lost less: ${pct(w2.clean.accuracy)} to ${pct(w2.phone.accuracy)}. So the result depends on the model, not just the line.`);
+  set("q3", "What about detectors that already exist?");
+  set("a3", `We tried a ready-made one from a public model hub. It was right on ${B(pct(rd.clean.accuracy))} of the same clips. That is worse than a coin toss.`);
+  set("twist", `${B("Now the twist.")} Over the phone line the ready-made detector rose to ${pct(rd.phone.accuracy)}. We do not know why. A detector that has not seen this kind of fake gives answers you cannot rely on, in either direction.`);
+  set("q4", "Do Gemini's embeddings hear it too?");
+  set("a4", `Partly. With a small classifier on top, Gemini Embedding 2 was right on ${B(pct(gm.clean.accuracy))} of clean clips and ${B(pct(gm.phone.accuracy))} over the phone line. The speech models did better on clean audio (${pct(cl.clean.accuracy)} to ${pct(w2.clean.accuracy)}). Gemini is still far above guessing.`);
+  const aucs = Object.values(used.per_speaker_clean).map((v) => v.auc);
+  set("q5", "Does it work for everyone?");
+  set("a5", `Within each person it separated real from fake almost perfectly: scores of ${f2(Math.min(...aucs))} to ${f2(Math.max(...aucs))} for all ${n.test_speakers} people. Across everyone together it was right ${B(pct(used.clean.accuracy))} of the time. Our reading: the cut-off between real and fake shifts from person to person, so one cut-off for everyone costs some accuracy.`);
+  const bins = D.calibration.test_bins, lo = bins[0], hi = bins[bins.length - 1];
+  set("q6", "Can you trust the percentage?");
+  set("a6", `<span class="num">${pct(lo.observed_fake)}</span> of the clips the detector was sure were human (under 5% AI) were actually fake. Of the clips it was sure were fake (over 95%), ${hi.observed_fake >= 0.995 ? "every one" : pct(hi.observed_fake)} was. So the demo never shows less than 5% AI.`);
+  set("closing", "A voice that sounds right is not proof, and a detector's answer is not proof either. Today it is one signal in a longer set of checks.");
 }
 const shown = {};
 function toggle(id, btn, chartFn, tableFn) {

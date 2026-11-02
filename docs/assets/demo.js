@@ -213,7 +213,8 @@ async function loadSample(s) {
     samples = await (await fetch("data/samples.json")).json();
     const box = $("samples");
     samples.forEach((s, i) => {
-      const b = document.createElement("button"); b.className = "btn"; b.textContent = `${i + 1}. ${s.name}`;
+      const b = document.createElement("button"); b.className = "btn";
+      b.innerHTML = `<span class="rf ${s.truth === "real" ? "r" : "f"}" title="${s.truth === "real" ? "Real recording" : "AI-generated fake"}">${s.truth === "real" ? "R" : "F"}</span> ${i + 1}. ${s.name}`;
       b.onclick = () => loadSample(s); box.appendChild(b);
     });
     $("reliability").innerHTML = cfg.reliability_html;
