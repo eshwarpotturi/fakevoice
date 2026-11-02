@@ -23,6 +23,25 @@ Training on phone-quality copies of the clips lifted the phone-line result from 
 
 The percentage in the demo is calibrated on people not used for the test. When the detector sounded sure a clip was human (under 5% AI), about 6 in 100 were actually fake, so the demo never shows less than 5% AI.
 
+
+## Try it on a clone of your own voice
+
+The demo accepts any recording, so you can test a clone you made yourself. `clone_test/generate.py` makes new sentences from a 30-second recording of **your own voice** (or someone who agreed), using the open Chatterbox model on a normal computer. `score_files.py` then scores any audio files the same way the demo page does, on clean audio and over the simulated phone line.
+
+```bash
+python clone_test/generate.py --reference my_voice.wav --out clones/
+python score_files.py my_voice.wav clones/clone_1.wav clones/clone_2.wav clones/clone_3.wav
+```
+
+A small test we ran (one person, three clones, an open-model clone, not the older fakes in the dataset):
+
+| Audio | Clean audio | Over a simulated phone line |
+|---|---|---|
+| Real recording | called human | called human |
+| 3 clones | all 3 caught | 1 of 3 caught |
+
+Three clips is far too few to give a rate. It shows that modern clones can slip through over a phone line, which the 12-person test above does not capture. No voice recordings or clones are stored in this repository.
+
 ## What this does not show
 
 - **Recording differences.** In this collection, real and fake clips come from different sources, so part of any score may reflect how a clip was recorded, not whether the voice is synthetic. A trivial check using only loudness and tone balance scores 0.62 (0.5 is guessing).
