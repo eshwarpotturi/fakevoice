@@ -96,9 +96,21 @@ dialog h3 { margin: 0 0 .5rem; }
 
 .rf { display: inline-block; min-width: 1.5em; text-align: center; font-weight: 700; font-size: .75rem; border-radius: 5px; padding: .05rem .3rem; margin-right: .35rem; color: #fff; }
 .rf.r { background: var(--human); } .rf.f { background: var(--ai); }
-.story h3 { font-size: 1.35rem; margin: 0 0 .3rem; }
-.story p { margin: .3rem 0; }
-.story .lead { font-size: 1.05rem; }
-.story .num { font-size: 2.2rem; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
-.story .twist { border-left: 4px solid var(--series-2); padding-left: .8rem; margin: .6rem 0; }
-.closing { font-size: 1.15rem; font-weight: 600; text-align: center; padding: .6rem 0 0; }
+
+.story2 { max-width: 1760px; }
+.hook { padding: 1.6rem .4rem 1rem; }
+.hook h2 { font-size: 2.6rem; line-height: 1.1; margin: 0; }
+.hook p { font-size: 1.15rem; color: var(--text-secondary); max-width: 62rem; margin: .6rem 0 0; }
+.chapter { display: grid; grid-template-columns: 5fr 7fr; gap: 2rem; align-items: center; padding: 1.6rem .4rem; border-top: 1px solid var(--line); }
+.chapter .q { font-size: 1.35rem; margin: 0 0 .2rem; }
+.chapter .hero { font-size: 6.2rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -.02em; margin: .3rem 0 .5rem; }
+.chapter .hero .from { color: var(--series-2); } .chapter .hero .arrow { color: var(--text-muted); font-weight: 400; margin: 0 .15em; } .chapter .hero .to { color: var(--series-1); }
+.chapter .hero.bad { color: var(--series-2); } .chapter .hero.good { color: var(--series-1); }
+.chapter .cap { font-size: 1.2rem; margin: 0; max-width: 30rem; }
+.chapter .note { margin: .7rem 0 0; padding-left: .8rem; border-left: 4px solid var(--series-2); font-size: 1rem; color: var(--text-secondary); max-width: 30rem; }
+.chapter .viz { min-height: 220px; }
+.vizhead { display: flex; justify-content: space-between; align-items: center; margin-bottom: .3rem; }
+.vizhead span { font-size: .85rem; color: var(--text-secondary); }
+.endcards { margin-top: 1rem; }
+.endcards ul, .endcards ol { margin: 0; padding-left: 1.2rem; } .endcards li { margin-bottom: .35rem; }
+.closing { font-size: 1.4rem; font-weight: 650; text-align: center; padding: 1.8rem 1rem .6rem; max-width: 60rem; margin: 0 auto; }

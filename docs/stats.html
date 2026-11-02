@@ -16,62 +16,17 @@
     <button class="btn toggle" id="theme" aria-label="Switch between light and dark">Dark mode</button>
   </nav>
 </header>
-<main class="story">
-  <!-- Hook: one relatable case, then the question -->
-  <div class="card" style="margin-bottom:1rem">
-    <h2 id="headline" style="font-size:1.7rem; margin:0"></h2>
-    <p class="lead" id="subhead" style="margin:.4rem 0 0"></p>
-  </div>
-
-  <!-- 1. Can it catch fakes of people it has never heard? -->
-  <section style="margin-bottom:1rem">
-    <h3 id="q1"></h3><p class="lead" id="a1"></p>
-    <div class="grid cols-3" id="tiles" style="margin-top:.6rem"></div>
+<main class="story2">
+  <section class="hook">
+    <h2 id="headline"></h2>
+    <p id="subhead"></p>
   </section>
-
-  <!-- 2 and 3. Phone line, and the detectors already on the shelf -->
-  <section class="grid cols-2" style="margin-bottom:1rem">
-    <div>
-      <h3 id="q2"></h3><p class="lead" id="a2"></p>
-      <h3 id="q3" style="margin-top:.9rem"></h3><p class="lead" id="a3"></p>
-      <div class="twist" id="twist"></div>
-      <h3 id="q4" style="margin-top:.9rem"></h3><p class="lead" id="a4"></p>
-    </div>
-    <section class="card">
-      <div class="row" style="justify-content:space-between"><h2>Detectors compared</h2><button class="btn" id="t1">Show table</button></div>
-      <p class="small" style="margin:0 0 .3rem">Score from 0 to 1 on people never used in training. 0.5 is a coin toss; 1 is perfect. Click a bar for details.</p>
-      <div class="legend"><span><i style="background:var(--series-1)"></i>Clean audio</span><span><i style="background:var(--series-2)"></i>Phone-quality audio</span></div>
-      <div id="chart1"></div>
-    </section>
+  <div id="chapters"></div>
+  <section class="grid cols-2 endcards">
+    <div class="card"><h2>Honest caveats</h2><div id="caveats"></div></div>
+    <div class="card"><h2>How this was built</h2><div id="method"></div>
+      <p class="small" style="margin-top:.6rem">Every number here is measured on people the detector never saw in training. The explanations in the text are our reading. Code and data: <a href="https://github.com/eshwarpotturi/fake-voice-check">github.com/eshwarpotturi/fake-voice-check</a>.</p></div>
   </section>
-
-  <!-- 5. Does it work for everyone? -->
-  <section class="grid cols-2" style="margin-bottom:1rem">
-    <div>
-      <h3 id="q5"></h3><p class="lead" id="a5"></p>
-    </div>
-    <section class="card">
-      <div class="row" style="justify-content:space-between"><h2 id="h-spk">Person by person</h2><button class="btn" id="t2">Show table</button></div>
-      <p class="small" style="margin:0 0 .3rem" id="spk-sub"></p>
-      <div id="chart2"></div>
-    </section>
-  </section>
-
-  <!-- 6. Can you trust the percentage? -->
-  <section class="grid cols-2" style="margin-bottom:1rem">
-    <div>
-      <h3 id="q6"></h3><p class="lead" id="a6"></p>
-    </div>
-    <section class="card"><h2>What it said, and what the clips really were</h2><p class="small" style="margin:0 0 .4rem" id="cal-sub"></p><div id="cal"></div></section>
-  </section>
-
-  <!-- Honest caveats, and how the story was built -->
-  <div class="grid cols-2">
-    <section class="card"><h2>Honest caveats</h2><div id="caveats"></div></section>
-    <section class="card"><h2>How this was built</h2><div id="method"></div>
-      <p class="small" style="margin-top:.6rem">Measured: every number on this page, from the held-out test people. Our reading: the explanations in the text, such as why the cut-off shifts between people. Not tested: Indian voices, other languages, real phone calls.</p>
-      <p class="small">Code, data and method: <a href="https://github.com/eshwarpotturi/fake-voice-check">github.com/eshwarpotturi/fake-voice-check</a>.</p></section>
-  </div>
   <p class="closing" id="closing"></p>
 </main>
 <div id="tip"></div>

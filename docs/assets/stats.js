@@ -1,4 +1,5 @@
 "use strict";
+// Results page: a scroll story. One question per section, one big number, one short line, one chart.
 const $ = (id) => document.getElementById(id);
 const pct = (v) => (v == null ? "n/a" : Math.round(v * 100) + "%");
 const f2 = (v) => (v == null ? "n/a" : v.toFixed(2));
@@ -33,143 +34,179 @@ function barPath(x, y, w, h, r) {
   r = Math.min(r, w, h / 2);
   return `M${x},${y} H${x + w - r} Q${x + w},${y} ${x + w},${y + r} V${y + h - r} Q${x + w},${y + h} ${x + w - r},${y + h} H${x} Z`;
 }
-
-let D;
-fetch("data/results.json", { cache: "no-cache" }).then((r) => r.json()).then((d) => { D = d; render(); });
-
-function render() {
-  const best = D.detectors.find((d) => d.id === D.best);
-  story();
-
-  // tiles
-  const tiles = [
-    { big: pct(best.clean.accuracy), label: "Right on clean audio", detail: `<p>The best detector (${best.name}) was right on <b>${pct(best.clean.accuracy)}</b> of ${D.counts.test} test clips from ${D.counts.test_speakers} speakers it had never heard.</p><p class="muted">Half the clips were real and half were AI-generated, so guessing would score about 50%.</p>` },
-    { big: best.phone ? pct(best.phone.accuracy) : "n/a", label: "Right over a simulated phone line", detail: best.phone ? `<p>The same detector, on the same clips after a phone-line effect (narrow band, 8 kHz, compressed), was right on <b>${pct(best.phone.accuracy)}</b>.</p><p class="muted">This is the setting a bank cares about, because calls arrive over phone lines.</p>` : "<p>Not tested.</p>" },
-    { big: pct(best.clean.fakes_caught_at_5pct_false_alarms), label: "Fakes caught when 5% of real voices are wrongly flagged", detail: `<p>If a bank accepts wrongly flagging <b>5 in 100</b> genuine callers, this detector catches <b>${pct(best.clean.fakes_caught_at_5pct_false_alarms)}</b> of fakes on clean audio${best.phone ? ` and <b>${pct(best.phone.fakes_caught_at_5pct_false_alarms)}</b> over a phone line` : ""}.</p>` },
-  ];
-  const t = $("tiles"); t.innerHTML = "";
-  tiles.forEach((x) => {
-    const d = document.createElement("div"); d.className = "card tile"; d.tabIndex = 0;
-    d.innerHTML = `<div class="big">${x.big}</div><div class="label">${x.label}</div>`;
-    d.onclick = () => openDialog(x.label, x.detail); d.onkeydown = (e) => e.key === "Enter" && d.onclick();
-    t.appendChild(d);
-  });
-
-  chart1(); chart2();
-  $("method").innerHTML = D.method_html;
-  $("cal-sub").textContent = "On the test people only. Clips are grouped by the percentage the detector gave, then compared with what they really were.";
-  $("cal").innerHTML = `<table class="data"><tr><th>When the detector said</th><th>Clips</th><th>Actually AI-generated</th></tr>${D.calibration.test_bins.map((b) => `<tr><td>${pct(b.lo)} to ${pct(b.hi)} AI</td><td>${b.n}</td><td>${pct(b.observed_fake)}</td></tr>`).join("")}</table><p class="small" style="margin-top:.5rem">${D.calibration.note}</p>`;
-  $("caveats").innerHTML = D.caveats_html;
-  $("t1").onclick = () => toggle("chart1", "t1", chart1, table1);
-  $("t2").onclick = () => toggle("chart2", "t2", chart2, table2);
-}
-// The story: one question per section, a plain answer with the number, then the evidence below it.
-function story() {
-  const g = (id) => D.detectors.find((d) => d.id === id);
-  const used = g("wavlm_both"), cl = g("wavlm_clean"), w2 = g("w2v2_clean"), gm = g("gemini_clean");
-  const rd = D.detectors.find((d) => d.kind === "off-the-shelf");
-  const n = D.counts, B = (t) => `<b>${t}</b>`;
-  const set = (id, html) => { $(id).innerHTML = html; };
-  set("headline", "Can you tell a cloned voice from a real one?");
-  set("subhead", "A caller sounds just like your customer, and the voice matches the one on file. We tested whether a detector can still tell it is a fake, on people it had never heard, even over a phone line.");
-  set("q1", "Can a detector catch fakes of people it has never heard?");
-  set("a1", `Mostly, yes. It was right on ${B(pct(used.clean.accuracy))} of ${n.test} clips from ${n.test_speakers} people held out of training. Half the clips were real and half were fake.`);
-  set("q2", "Does a phone line break it?");
-  set("a2", `It can. A WavLM detector trained on clean audio fell from ${B(pct(cl.clean.accuracy))} to ${B(pct(cl.phone.accuracy))} over a simulated phone line. Trained on phone-quality copies too, it held at ${B(pct(used.phone.accuracy))}. A wav2vec 2.0 detector trained on clean audio only lost less: ${pct(w2.clean.accuracy)} to ${pct(w2.phone.accuracy)}. So the result depends on the model, not just the line.`);
-  set("q3", "What about detectors that already exist?");
-  set("a3", `We tried a ready-made one from a public model hub. It was right on ${B(pct(rd.clean.accuracy))} of the same clips. That is worse than a coin toss.`);
-  set("twist", `${B("Now the twist.")} Over the phone line the ready-made detector rose to ${pct(rd.phone.accuracy)}. We do not know why. A detector that has not seen this kind of fake gives answers you cannot rely on, in either direction.`);
-  set("q4", "Do Gemini's embeddings hear it too?");
-  set("a4", `Partly. With a small classifier on top, Gemini Embedding 2 was right on ${B(pct(gm.clean.accuracy))} of clean clips and ${B(pct(gm.phone.accuracy))} over the phone line. The speech models did better on clean audio (${pct(cl.clean.accuracy)} to ${pct(w2.clean.accuracy)}). Gemini is still far above guessing.`);
-  const aucs = Object.values(used.per_speaker_clean).map((v) => v.auc);
-  set("q5", "Does it work for everyone?");
-  set("a5", `Within each person it separated real from fake almost perfectly: scores of ${f2(Math.min(...aucs))} to ${f2(Math.max(...aucs))} for all ${n.test_speakers} people. Across everyone together it was right ${B(pct(used.clean.accuracy))} of the time. Our reading: the cut-off between real and fake shifts from person to person, so one cut-off for everyone costs some accuracy.`);
-  const bins = D.calibration.test_bins, lo = bins[0], hi = bins[bins.length - 1];
-  set("q6", "Can you trust the percentage?");
-  set("a6", `<span class="num">${pct(lo.observed_fake)}</span> of the clips the detector was sure were human (under 5% AI) were actually fake. Of the clips it was sure were fake (over 95%), ${hi.observed_fake >= 0.995 ? "every one" : pct(hi.observed_fake)} was. So the demo never shows less than 5% AI.`);
-  set("closing", "A voice that sounds right is not proof, and a detector's answer is not proof either. Today it is one signal in a longer set of checks.");
-}
-const shown = {};
-function toggle(id, btn, chartFn, tableFn) {
-  shown[id] = !shown[id];
-  $(btn).textContent = shown[id] ? "Show chart" : "Show table";
-  shown[id] ? tableFn() : chartFn();
-}
-
-function chart1() {
-  const host = $("chart1"); host.innerHTML = "";
-  const rows = D.detectors;
-  const W = 760, left = 270, right = 60, top = 8, rowH = 70, H = top + rows.length * rowH + 34;
-  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, width: "100%", role: "img", "aria-label": "Detector scores on clean and phone-quality audio" }, host);
-  const x = (v) => left + v * (W - left - right);
-  for (const v of [0, 0.5, 1]) {
-    el("line", { x1: x(v), x2: x(v), y1: top, y2: H - 28, stroke: "var(--line)", "stroke-width": v === 0.5 ? 1.5 : 1, "stroke-dasharray": v === 0.5 ? "4 4" : "" }, svg);
-    const tx = el("text", { x: x(v), y: H - 10, "text-anchor": "middle" }, svg); tx.textContent = v === 0.5 ? "0.5 coin toss" : v;
-  }
-  rows.forEach((d, i) => {
-    const y0 = top + i * rowH;
-    const lab = el("text", { x: left - 10, y: y0 + 26, "text-anchor": "end" }, svg);
-    wrap(lab, d.name, y0 + 24, left - 14);
-    [["clean", "var(--series-1)"], ["phone", "var(--series-2)"]].forEach(([k, col], j) => {
-      const m = d[k]; if (!m) return;
-      const y = y0 + 6 + j * 24, w = Math.max(2, x(m.auc) - x(0));
-      const p = el("path", { d: barPath(x(0), y, w, 20, 4), fill: col }, svg);
-      const v = el("text", { x: x(m.auc) + 6, y: y + 15, class: "val" }, svg); v.textContent = f2(m.auc);
-      const hit = el("rect", { x: x(0), y: y - 2, width: W - left - right, height: 24, fill: "transparent", class: "bar-hit", tabindex: 0 }, svg);
-      const html = `<b>${d.name}</b><br>${k === "clean" ? "Clean audio" : "Phone-quality audio"}: score ${f2(m.auc)}<br>Right on ${pct(m.accuracy)} of clips`;
-      hit.addEventListener("mousemove", (e) => showTip(e, html)); hit.addEventListener("mouseleave", hideTip);
-      const open = () => openDialog(d.name, `<p class="muted">${d.kind === "off-the-shelf" ? "A ready-made detector from the Hugging Face model hub. We did not train it." : "Trained by us on a separate set of speakers."}</p>
-        <table class="data"><tr><th></th><th>Clean</th><th>Phone-quality</th></tr>
-        <tr><td>Score (0.5 = coin toss)</td><td>${f2(d.clean.auc)}</td><td>${f2(d.phone && d.phone.auc)}</td></tr>
-        <tr><td>Right on</td><td>${pct(d.clean.accuracy)}</td><td>${pct(d.phone && d.phone.accuracy)}</td></tr>
-        <tr><td>Equal error rate</td><td>${pct(d.clean.eer)}</td><td>${pct(d.phone && d.phone.eer)}</td></tr>
-        <tr><td>Fakes caught at 5% false alarms</td><td>${pct(d.clean.fakes_caught_at_5pct_false_alarms)}</td><td>${pct(d.phone && d.phone.fakes_caught_at_5pct_false_alarms)}</td></tr>
-        <tr><td>Likely range of the score (95%)</td><td>${f2(d.clean.auc_95ci[0])} to ${f2(d.clean.auc_95ci[1])}</td><td>${d.phone ? f2(d.phone.auc_95ci[0]) + " to " + f2(d.phone.auc_95ci[1]) : "n/a"}</td></tr></table>
-        <p class="small">${d.note || ""}</p>`);
-      hit.addEventListener("click", open); hit.addEventListener("keydown", (e) => e.key === "Enter" && open());
-    });
-  });
-}
 function wrap(textEl, str, y, maxPx) {
   const words = str.split(" "); let line = "", lines = [];
-  words.forEach((w) => { if ((line + " " + w).trim().length * 7.2 > maxPx) { lines.push(line); line = w; } else line = (line + " " + w).trim(); });
+  words.forEach((w) => { if ((line + " " + w).trim().length * 7.4 > maxPx) { lines.push(line); line = w; } else line = (line + " " + w).trim(); });
   lines.push(line);
   const y0 = y - (lines.length - 1) * 8;
   lines.forEach((l, i) => { const ts = el("tspan", { x: textEl.getAttribute("x"), y: y0 + i * 16 }, textEl); ts.textContent = l; });
 }
-function table1() {
-  $("chart1").innerHTML = `<table class="data"><tr><th>Detector</th><th>Clean score</th><th>Clean right</th><th>Phone score</th><th>Phone right</th></tr>${D.detectors.map((d) => `<tr><td>${d.name}</td><td>${f2(d.clean.auc)}</td><td>${pct(d.clean.accuracy)}</td><td>${f2(d.phone && d.phone.auc)}</td><td>${pct(d.phone && d.phone.accuracy)}</td></tr>`).join("")}</table>`;
+
+let D;
+fetch("data/results.json", { cache: "no-cache" }).then((r) => r.json()).then((d) => { D = d; render(); });
+
+const det = (id) => D.detectors.find((d) => d.id === id);
+
+// ---------- charts ----------
+// Grouped bars: clean audio (blue) and phone-quality audio (orange), as "right on X%".
+function vizAccuracy(host, rows) {
+  host.innerHTML = "";
+  const W = 780, left = 290, right = 70, top = 8, rowH = 74, H = top + rows.length * rowH + 40;
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, width: "100%", role: "img", "aria-label": "How often each detector was right, on clean and phone-quality audio" }, host);
+  const x = (v) => left + v * (W - left - right);
+  [0, 0.5, 1].forEach((v) => {
+    el("line", { x1: x(v), x2: x(v), y1: top, y2: H - 32, stroke: "var(--line)", "stroke-width": v === 0.5 ? 1.6 : 1, "stroke-dasharray": v === 0.5 ? "5 5" : "" }, svg);
+    const t = el("text", { x: x(v), y: H - 12, "text-anchor": "middle" }, svg); t.textContent = v === 0.5 ? "50% coin toss" : Math.round(v * 100) + "%";
+  });
+  rows.forEach((d, i) => {
+    const y0 = top + i * rowH;
+    const lab = el("text", { x: left - 12, y: y0 + 30, "text-anchor": "end", style: "font-size:14px" }, svg);
+    wrap(lab, d.name, y0 + 30, left - 16);
+    [["clean", "var(--series-1)"], ["phone", "var(--series-2)"]].forEach(([k, col], j) => {
+      const m = d[k]; if (!m) return;
+      const y = y0 + 6 + j * 28, w = Math.max(2, x(m.accuracy) - x(0));
+      el("path", { d: barPath(x(0), y, w, 24, 5), fill: col }, svg);
+      const v = el("text", { x: x(m.accuracy) + 8, y: y + 17, class: "val", style: "font-size:15px" }, svg); v.textContent = pct(m.accuracy);
+      const hit = el("rect", { x: x(0), y: y - 2, width: W - left - right, height: 28, fill: "transparent", class: "bar-hit", tabindex: 0 }, svg);
+      const html = `<b>${d.name}</b><br>${k === "clean" ? "Clean audio" : "Phone-quality audio"}: right on ${pct(m.accuracy)}`;
+      hit.addEventListener("mousemove", (e) => showTip(e, html)); hit.addEventListener("mouseleave", hideTip);
+      const open = () => detailDialog(d);
+      hit.addEventListener("click", open); hit.addEventListener("keydown", (e) => e.key === "Enter" && open());
+    });
+  });
+}
+function detailDialog(d) {
+  openDialog(d.name, `<p class="muted">${d.note || ""}</p>
+    <table class="data"><tr><th></th><th>Clean</th><th>Phone-quality</th></tr>
+    <tr><td>Right on</td><td>${pct(d.clean.accuracy)}</td><td>${pct(d.phone && d.phone.accuracy)}</td></tr>
+    <tr><td>Score (0.5 = coin toss, 1 = perfect)</td><td>${f2(d.clean.auc)}</td><td>${f2(d.phone && d.phone.auc)}</td></tr>
+    <tr><td>Fakes caught at 5% false alarms</td><td>${pct(d.clean.fakes_caught_at_5pct_false_alarms)}</td><td>${pct(d.phone && d.phone.fakes_caught_at_5pct_false_alarms)}</td></tr>
+    <tr><td>Likely range of the score (95%)</td><td>${f2(d.clean.auc_95ci[0])} to ${f2(d.clean.auc_95ci[1])}</td><td>${d.phone ? f2(d.phone.auc_95ci[0]) + " to " + f2(d.phone.auc_95ci[1]) : "n/a"}</td></tr></table>`);
+}
+function tableAccuracy(host, rows) {
+  host.innerHTML = `<table class="data"><tr><th>Detector</th><th>Right, clean</th><th>Right, phone</th><th>Score, clean</th><th>Score, phone</th></tr>${rows.map((d) => `<tr><td>${d.name}</td><td>${pct(d.clean.accuracy)}</td><td>${pct(d.phone && d.phone.accuracy)}</td><td>${f2(d.clean.auc)}</td><td>${f2(d.phone && d.phone.auc)}</td></tr>`).join("")}</table>`;
 }
 
-function spkRows() {
-  const best = D.detectors.find((d) => d.id === D.best);
-  return Object.entries(best.per_speaker_clean).map(([n, v]) => ({ n, clean: v, phone: best.per_speaker_phone && best.per_speaker_phone[n] })).sort((a, b) => a.clean.auc - b.clean.auc);
-}
-function chart2() {
-  const best = D.detectors.find((d) => d.id === D.best);
-  $("h-spk").textContent = "Speaker by speaker: " + best.name;
-  $("spk-sub").textContent = "Each score compares one person's real clips with fake clips of the same person, on clean audio. None of these people was used in training. Click a bar for the clip counts.";
-  const host = $("chart2"); host.innerHTML = "";
-  const rows = spkRows();
-  const W = 760, left = 190, right = 56, top = 6, rowH = 30, H = top + rows.length * rowH + 30;
-  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, width: "100%", role: "img", "aria-label": "Score for each test speaker" }, host);
-  const x = (v) => left + v * (W - left - right);
-  for (const v of [0, 0.5, 1]) {
-    el("line", { x1: x(v), x2: x(v), y1: top, y2: H - 26, stroke: "var(--line)", "stroke-dasharray": v === 0.5 ? "4 4" : "" }, svg);
-    const tx = el("text", { x: x(v), y: H - 8, "text-anchor": "middle" }, svg); tx.textContent = v;
+// 100 squares: how many of 100 clips it got right.
+function vizWaffle(host, right) {
+  host.innerHTML = "";
+  const n = Math.round(right * 100), S = 34, G = 6, W = 10 * (S + G), H = 10 * (S + G);
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, width: "100%", style: "max-width:520px;display:block;margin:0 auto", role: "img", "aria-label": `${n} of 100 clips right` }, host);
+  for (let i = 0; i < 100; i++) {
+    const r = Math.floor(i / 10), c = i % 10, ok = i < n;
+    el("rect", { x: c * (S + G), y: r * (S + G), width: S, height: S, rx: 6, fill: ok ? "var(--series-1)" : "none", stroke: ok ? "none" : "var(--series-2)", "stroke-width": ok ? 0 : 3 }, svg);
   }
+  const p = document.createElement("p"); p.className = "small"; p.style.textAlign = "center"; p.style.marginTop = ".6rem";
+  p.textContent = `Every square is one clip. Filled: right (${n}). Outlined: wrong (${100 - n}).`;
+  host.appendChild(p);
+}
+
+function personRows() {
+  const d = det("wavlm_both");
+  return Object.entries(d.per_speaker_clean).map(([n, v]) => ({ n, ...v })).sort((a, b) => a.auc - b.auc);
+}
+function vizPerson(host) {
+  host.innerHTML = "";
+  const rows = personRows();
+  const W = 780, left = 210, right = 60, top = 6, rowH = 30, H = top + rows.length * rowH + 30;
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, width: "100%", role: "img", "aria-label": "Score for each test person" }, host);
+  const x = (v) => left + v * (W - left - right);
+  [0, 0.5, 1].forEach((v) => {
+    el("line", { x1: x(v), x2: x(v), y1: top, y2: H - 26, stroke: "var(--line)", "stroke-dasharray": v === 0.5 ? "5 5" : "" }, svg);
+    const t = el("text", { x: x(v), y: H - 8, "text-anchor": "middle" }, svg); t.textContent = v === 0.5 ? "0.5 coin toss" : v;
+  });
   rows.forEach((r, i) => {
     const y = top + i * rowH + 4;
-    const t = el("text", { x: left - 8, y: y + 14, "text-anchor": "end" }, svg); t.textContent = r.n;
-    el("path", { d: barPath(x(0), y, Math.max(2, x(r.clean.auc) - x(0)), 18, 4), fill: "var(--series-1)" }, svg);
-    const v = el("text", { x: x(r.clean.auc) + 6, y: y + 14, class: "val" }, svg); v.textContent = f2(r.clean.auc);
-    const hit = el("rect", { x: x(0), y: y - 4, width: W - left - right, height: 26, fill: "transparent", class: "bar-hit", tabindex: 0 }, svg);
-    const html = `<b>${r.n}</b><br>Score ${f2(r.clean.auc)} · ${r.clean.real} real and ${r.clean.fake} fake clips`;
+    const t = el("text", { x: left - 10, y: y + 15, "text-anchor": "end", style: "font-size:14px" }, svg); t.textContent = r.n;
+    el("path", { d: barPath(x(0), y, Math.max(2, x(r.auc) - x(0)), 20, 4), fill: "var(--series-1)" }, svg);
+    const v = el("text", { x: x(r.auc) + 8, y: y + 15, class: "val", style: "font-size:14px" }, svg); v.textContent = f2(r.auc);
+    const hit = el("rect", { x: x(0), y: y - 4, width: W - left - right, height: 28, fill: "transparent", class: "bar-hit", tabindex: 0 }, svg);
+    const html = `<b>${r.n}</b><br>Score ${f2(r.auc)} · ${r.real} real and ${r.fake} fake clips`;
     hit.addEventListener("mousemove", (e) => showTip(e, html)); hit.addEventListener("mouseleave", hideTip);
-    const open = () => openDialog(r.n, `<p>Score on clean audio: <b>${f2(r.clean.auc)}</b>${r.phone ? `; over a phone line: <b>${f2(r.phone.auc)}</b>` : ""}.</p><p class="muted">Based on ${r.clean.real} real and ${r.clean.fake} fake clips. With so few clips per person, small differences between people are not reliable.</p><p class="small">The fake clips were collected from public sources by the dataset's researchers. We did not make any.</p>`);
+    const open = () => openDialog(r.n, `<p>Score for this person: <b>${f2(r.auc)}</b>, from ${r.real} real and ${r.fake} fake clips.</p><p class="muted">With so few clips, small differences between people are not reliable. The fake clips were collected from public sources by the dataset's researchers. We made none.</p>`);
     hit.addEventListener("click", open); hit.addEventListener("keydown", (e) => e.key === "Enter" && open());
   });
 }
-function table2() {
-  $("chart2").innerHTML = `<table class="data"><tr><th>Speaker</th><th>Clean score</th><th>Phone score</th><th>Real clips</th><th>Fake clips</th></tr>${spkRows().map((r) => `<tr><td>${r.n}</td><td>${f2(r.clean.auc)}</td><td>${f2(r.phone && r.phone.auc)}</td><td>${r.clean.real}</td><td>${r.clean.fake}</td></tr>`).join("")}</table>`;
+function tablePerson(host) {
+  host.innerHTML = `<table class="data"><tr><th>Person</th><th>Score</th><th>Real clips</th><th>Fake clips</th></tr>${personRows().map((r) => `<tr><td>${r.n}</td><td>${f2(r.auc)}</td><td>${r.real}</td><td>${r.fake}</td></tr>`).join("")}</table>`;
+}
+
+// What the detector said (tick) against what the clips really were (bar).
+function vizCal(host) {
+  host.innerHTML = "";
+  const bins = D.calibration.test_bins;
+  const W = 780, left = 190, right = 80, top = 6, rowH = 46, H = top + bins.length * rowH + 62;
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, width: "100%", role: "img", "aria-label": "Share of clips that were really fake, by what the detector said" }, host);
+  const x = (v) => left + v * (W - left - right);
+  [0, 0.5, 1].forEach((v) => {
+    el("line", { x1: x(v), x2: x(v), y1: top, y2: H - 56, stroke: "var(--line)", "stroke-dasharray": v === 0.5 ? "5 5" : "" }, svg);
+    const t = el("text", { x: x(v), y: H - 40, "text-anchor": "middle" }, svg); t.textContent = Math.round(v * 100) + "%";
+  });
+  bins.forEach((b, i) => {
+    const y = top + i * rowH + 6;
+    const t = el("text", { x: left - 12, y: y + 20, "text-anchor": "end", style: "font-size:14px" }, svg); t.textContent = `Said ${Math.round(b.lo * 100)}–${Math.round(b.hi * 100)}% AI`;
+    el("path", { d: barPath(x(0), y, Math.max(3, x(b.observed_fake) - x(0)), 28, 5), fill: "var(--series-2)" }, svg);
+    el("rect", { x: x(b.predicted) - 2, y: y - 4, width: 4, height: 36, fill: "var(--text-primary)" }, svg);
+    const v = el("text", { x: Math.max(x(b.observed_fake), x(b.predicted)) + 10, y: y + 20, class: "val", style: "font-size:15px" }, svg); v.textContent = pct(b.observed_fake);
+    const hit = el("rect", { x: x(0), y: y - 6, width: W - left - right, height: 40, fill: "transparent", class: "bar-hit", tabindex: 0 }, svg);
+    const html = `<b>${b.n} clips</b> where the detector said ${Math.round(b.lo * 100)}–${Math.round(b.hi * 100)}% AI<br>Really fake: ${pct(b.observed_fake)}`;
+    hit.addEventListener("mousemove", (e) => showTip(e, html)); hit.addEventListener("mouseleave", hideTip);
+  });
+  const lg = el("text", { x: left, y: H - 8, style: "font-size:13px" }, svg);
+  lg.textContent = "Orange bar: share that were really fake. Black tick: what the detector claimed on average.";
+}
+function tableCal(host) {
+  host.innerHTML = `<table class="data"><tr><th>When the detector said</th><th>Clips</th><th>Really fake</th></tr>${D.calibration.test_bins.map((b) => `<tr><td>${pct(b.lo)} to ${pct(b.hi)} AI</td><td>${b.n}</td><td>${pct(b.observed_fake)}</td></tr>`).join("")}</table>`;
+}
+
+// ---------- the story ----------
+function render() {
+  const used = det("wavlm_both"), cl = det("wavlm_clean"), w2 = det("w2v2_clean"), gm = det("gemini_clean");
+  const rd = D.detectors.find((d) => d.kind === "off-the-shelf");
+  const n = D.counts, bins = D.calibration.test_bins, lo = bins[0], hi = bins[bins.length - 1];
+  $("headline").textContent = "Can you tell a cloned voice from a real one?";
+  $("subhead").textContent = "A caller sounds just like your customer. We tested whether a detector can still tell it is a fake, on people it had never heard, even over a phone line.";
+
+  const chapters = [
+    { q: "Can it catch fakes of people it has never heard?", hero: pct(used.clean.accuracy),
+      cap: `Right on ${n.test} clips from ${n.test_speakers} people held out of training. Half real, half fake.`,
+      viz: (h) => vizWaffle(h, used.clean.accuracy), title: "Out of every 100 clips" },
+    { q: "Does a phone line break it?", hero: `<span class="from">${pct(cl.phone.accuracy)}</span><span class="arrow">→</span><span class="to">${pct(used.phone.accuracy)}</span>`,
+      cap: `A detector trained on clean audio fell to ${pct(cl.phone.accuracy)} over a simulated phone line. Trained on phone-quality copies too, it held at ${pct(used.phone.accuracy)}.`,
+      note: `Not only the line: wav2vec 2.0, trained on clean audio, lost less (${pct(w2.clean.accuracy)} to ${pct(w2.phone.accuracy)}).`,
+      rows: [cl, used, w2], title: "Right on, by training" },
+    { q: "What about detectors that already exist?", hero: pct(rd.clean.accuracy), heroClass: "bad",
+      cap: "A ready-made detector from a public model hub. Worse than a coin toss.",
+      note: `Over the phone line it rose to ${pct(rd.phone.accuracy)}. We do not know why.`,
+      rows: [rd, used], title: "Ready-made against ours" },
+    { q: "Do Gemini's embeddings hear it too?", hero: pct(gm.clean.accuracy),
+      cap: `Partly. Far above guessing, below the speech models (${pct(cl.clean.accuracy)} to ${pct(w2.clean.accuracy)}). Over a phone line: ${pct(gm.phone.accuracy)}.`,
+      rows: [gm, w2, cl], title: "Three ways to listen" },
+    { q: "Does it work for everyone?", hero: `${n.test_speakers} of ${n.test_speakers}`,
+      cap: `Within each person, real and fake separate almost perfectly. Across everyone together: ${pct(used.clean.accuracy)}.`,
+      note: "Our reading: the cut-off between real and fake shifts from person to person.",
+      person: true, title: "Score for each person" },
+    { q: "Can you trust the percentage?", hero: pct(lo.observed_fake), heroClass: "bad",
+      cap: `of clips it was sure were human (under 5% AI) were fake. Of those it was sure were fake (over 95%): ${hi.observed_fake >= 0.995 ? "every one" : pct(hi.observed_fake)}.`,
+      note: "So the demo never shows less than 5% AI.", cal: true, title: "What it said, against what was true" },
+  ];
+
+  const host = $("chapters"); host.innerHTML = "";
+  chapters.forEach((c) => {
+    const sec = document.createElement("section"); sec.className = "chapter";
+    sec.innerHTML = `<div><h3 class="q">${c.q}</h3><div class="hero ${c.heroClass || ""}">${c.hero}</div><p class="cap">${c.cap}</p>${c.note ? `<p class="note">${c.note}</p>` : ""}</div>
+      <div class="card"><div class="vizhead"><span>${c.title}</span>${c.viz && !c.rows ? "" : '<button class="btn tb">Show table</button>'}</div>${c.rows ? '<div class="legend"><span><i style="background:var(--series-1)"></i>Clean audio</span><span><i style="background:var(--series-2)"></i>Phone-quality audio</span></div>' : ""}<div class="viz"></div></div>`;
+    host.appendChild(sec);
+    const viz = sec.querySelector(".viz"), btn = sec.querySelector(".tb");
+    let chart, table;
+    if (c.viz) { chart = () => c.viz(viz); }
+    if (c.rows) { chart = () => vizAccuracy(viz, c.rows); table = () => tableAccuracy(viz, c.rows); }
+    if (c.person) { chart = () => vizPerson(viz); table = () => tablePerson(viz); }
+    if (c.cal) { chart = () => vizCal(viz); table = () => tableCal(viz); }
+    chart();
+    if (btn && table) { let t = false; btn.onclick = () => { t = !t; btn.textContent = t ? "Show chart" : "Show table"; t ? table() : chart(); }; }
+  });
+  $("caveats").innerHTML = D.caveats_html;
+  $("method").innerHTML = D.method_html;
+  $("closing").textContent = "A voice that sounds right is not proof, and a detector's answer is not proof either. Today it is one signal in a longer set of checks.";
 }

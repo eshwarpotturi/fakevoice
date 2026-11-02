@@ -39,27 +39,23 @@ else:
 
 tr_sp = c["train_speakers"]
 R["method_html"] = f"""
-<ol style="margin:0; padding-left:1.2rem">
-<li><b>Data.</b> The In-the-Wild collection: real and AI-faked recordings of 54 public figures, gathered from the internet by researchers at Fraunhofer AISEC. We made no fake audio ourselves.</li>
-<li><b>Sample.</b> Up to 30 real and 30 fake clips of 6 seconds per person: {c['train'] + c['check'] + c['test']:,} clips in all.</li>
-<li><b>Split by person.</b> {tr_sp} people to train, {c['check_speakers']} to choose settings, and {c['test_speakers']} held back for the final test. No test person was used for any choice.</li>
-<li><b>Detectors.</b> WavLM, wav2vec 2.0 and Gemini Embedding 2 listen to the audio; a small classifier on top learns real against fake. One ready-made detector was tested as downloaded.</li>
-<li><b>Phone line.</b> Narrow band (300 to 3,400 Hz), 8 kHz sampling and standard phone compression. The demo has the same option.</li>
-<li><b>Score.</b> The chance that a random fake clip is rated more fake than a random real clip. 0.5 is guessing; 1 is perfect.</li>
+<ol>
+<li><b>Data.</b> Real and AI-faked recordings of 54 public figures, gathered from the internet by researchers. We made no fake audio.</li>
+<li><b>Sample.</b> Up to 30 real and 30 fake 6-second clips per person: {c['train'] + c['check'] + c['test']:,} clips.</li>
+<li><b>Split by person.</b> {tr_sp} people to train, {c['check_speakers']} to choose settings, {c['test_speakers']} held back for the test.</li>
+<li><b>Detectors.</b> WavLM, wav2vec 2.0 and Gemini Embedding 2 listen; a small classifier learns real against fake. One ready-made detector was tested as downloaded.</li>
+<li><b>Phone line.</b> 300 to 3,400 Hz, 8 kHz, standard phone compression.</li>
 </ol>"""
 
-simple_txt = ""
-if simple:
-    simple_txt = f" A trivial check using only loudness and tone balance scores {simple['test']:.2f}, so some of the score may come from this."
+simple_txt = f" A loudness-only check scores {simple['test']:.2f} (0.5 is guessing)." if simple else ""
 R["caveats_html"] = f"""
-<ul style="margin:0; padding-left:1.2rem">
-<li><b>Recording differences.</b> In this collection, real and fake clips come from different sources, so part of any score may reflect how a clip was recorded, not whether the voice is synthetic.{simple_txt}</li>
-<li><b>One collection.</b> Training and testing use the same kind of recordings. New voice generators and new recording settings are untested, and the ready-made detector shows how far results can fall.</li>
-<li><b>Real calls are mostly genuine.</b> Our test is half fake. If only 1 call in 1,000 is fake, a 5% false-alarm rate wrongly flags about 50 genuine callers for each fake caught.</li>
-<li><b>Few people.</b> {c['test_speakers']} test people with about {round(c['test'] / c['test_speakers'])} clips each. Differences between people are not reliable.</li>
-<li><b>Simulated phone line.</b> Real calls add dropouts, noise and other compression.</li>
-<li><b>Voices and languages.</b> The people are mostly English-speaking figures from the US and UK. Indian voices and other languages are not yet tested.</li>
-<li><b>A signal, not proof.</b> Use the percentage alongside other checks, such as a call-back.</li>
+<ul>
+<li><b>Recording differences.</b> Real and fake clips come from different sources, so part of the score may reflect the recording, not the voice.{simple_txt}</li>
+<li><b>One collection.</b> English-speaking public figures. New voice generators, Indian voices, other languages and real calls are untested.</li>
+<li><b>Modern clones.</b> A small test of three open-model clones of one person's voice: all 3 caught on clean audio, 1 to 2 of 3 over a simulated phone line.</li>
+<li><b>Real calls are mostly genuine.</b> If 1 call in 1,000 is fake, a 5% false-alarm rate flags about 50 genuine callers per fake caught.</li>
+<li><b>Few people.</b> {c['test_speakers']} test people, about {round(c['test'] / c['test_speakers'])} clips each.</li>
+<li><b>A signal, not proof.</b> Use it with other checks, such as a call-back.</li>
 </ul>"""
 
 CAL = json.load(open("work/calibration.json"))
