@@ -16,9 +16,10 @@ Tested on 604 clips from 12 people held out of training (half real, half AI-gene
 | WavLM, trained on clean and phone-quality audio (used in the demo) | 94% | 94% |
 | WavLM, trained on clean audio only | 94% | 85% |
 | wav2vec 2.0, trained on clean audio only | 95% | 93% |
+| Gemini Embedding 2, trained on clean audio only | 88% | 86% |
 | Ready-made detector from the Hugging Face model hub, as downloaded | 45% | 61% |
 
-Training on phone-quality copies of the clips lifted the phone-line result from 85% to 94%. The ready-made detector did no better than guessing on clean audio.
+Training on phone-quality copies of the clips lifted the phone-line result from 85% to 94%. A general-purpose Gemini embedding carries a real signal too, but a speech model scored higher. The ready-made detector did no better than guessing on clean audio.
 
 The percentage in the demo is calibrated on people not used for the test. When the detector sounded sure a clip was human (under 5% AI), about 6 in 100 were actually fake, so the demo never shows less than 5% AI.
 
@@ -42,7 +43,7 @@ The percentage in the demo is calibrated on people not used for the test. When t
 
 1. `pull_clips.py`: reads a sample of up to 30 real and 30 fake 6-second clips per person straight from the dataset archive, split by person into train (34), check (8) and test (12).
 2. `degrade.py`: makes phone-quality copies (300 to 3,400 Hz, 8 kHz, mu-law compression).
-3. `extract.py`: listens to every clip with WavLM and wav2vec 2.0, and scores the ready-made detector.
+3. `extract.py`: listens to every clip with WavLM and wav2vec 2.0, and scores the ready-made detector. `gemini_embed.py`: embeds every clip with Gemini Embedding 2 through an LLM gateway (about 360,000 tokens; the key is read from a file and is not in this repository).
 4. `train2.py`: trains a small classifier on top. Layer and settings are chosen on the check people only; the test people are used once, for the final numbers.
 5. `calibrate.py`: turns the score into a percentage using held-out folds of the training people.
 6. `export_onnx.py`, `shrink_onnx.py`: export the chosen detector as one browser file (weights stored at half precision).

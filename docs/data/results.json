@@ -468,6 +468,159 @@
    "check_clean_auc": 0.9999
   },
   {
+   "id": "gemini_clean",
+   "name": "Gemini Embedding 2, trained on clean audio",
+   "kind": "trained",
+   "layer": 0,
+   "C": 0.01,
+   "note": "Gemini Embedding 2 turns each clip into 3,072 numbers; the same small classifier is trained on top, on clean recordings only.",
+   "clean": {
+    "auc": 0.9583717155766109,
+    "eer": 0.10761284379523622,
+    "accuracy": 0.8841059602649006,
+    "fakes_caught_at_5pct_false_alarms": 0.7712418300653595,
+    "auc_95ci": [
+     0.9448374928987042,
+     0.9716104354323428
+    ]
+   },
+   "phone": {
+    "auc": 0.9316247751897179,
+    "eer": 0.14073123656621478,
+    "accuracy": 0.8609271523178808,
+    "fakes_caught_at_5pct_false_alarms": 0.6601307189542484,
+    "auc_95ci": [
+     0.9141273963565091,
+     0.9516786728693664
+    ]
+   },
+   "per_speaker_clean": {
+    "Adam Driver": {
+     "auc": 0.9795657726692208,
+     "real": 29,
+     "fake": 27
+    },
+    "Alec Guinness": {
+     "auc": 0.9795918367346939,
+     "real": 21,
+     "fake": 28
+    },
+    "Arnold Schwarzenegger": {
+     "auc": 0.945179584120983,
+     "real": 23,
+     "fake": 23
+    },
+    "Barack Obama": {
+     "auc": 0.9967948717948718,
+     "real": 26,
+     "fake": 24
+    },
+    "Bill Burr": {
+     "auc": 0.9862068965517241,
+     "real": 25,
+     "fake": 29
+    },
+    "Donald Trump": {
+     "auc": 0.9672364672364673,
+     "real": 26,
+     "fake": 27
+    },
+    "George Carlin": {
+     "auc": 0.9694960212201591,
+     "real": 29,
+     "fake": 26
+    },
+    "Gilbert Gottfried": {
+     "auc": 0.9642857142857142,
+     "real": 26,
+     "fake": 28
+    },
+    "John Cleese": {
+     "auc": 1.0,
+     "real": 29,
+     "fake": 28
+    },
+    "Kanye West": {
+     "auc": 1.0,
+     "real": 18,
+     "fake": 25
+    },
+    "Mark Zuckerberg": {
+     "auc": 1.0,
+     "real": 25,
+     "fake": 24
+    },
+    "Winston Churchill": {
+     "auc": 0.9803921568627452,
+     "real": 21,
+     "fake": 17
+    }
+   },
+   "per_speaker_phone": {
+    "Adam Driver": {
+     "auc": 0.9042145593869731,
+     "real": 29,
+     "fake": 27
+    },
+    "Alec Guinness": {
+     "auc": 0.8928571428571429,
+     "real": 21,
+     "fake": 28
+    },
+    "Arnold Schwarzenegger": {
+     "auc": 0.8620037807183365,
+     "real": 23,
+     "fake": 23
+    },
+    "Barack Obama": {
+     "auc": 0.9759615384615384,
+     "real": 26,
+     "fake": 24
+    },
+    "Bill Burr": {
+     "auc": 0.9779310344827588,
+     "real": 25,
+     "fake": 29
+    },
+    "Donald Trump": {
+     "auc": 0.9715099715099715,
+     "real": 26,
+     "fake": 27
+    },
+    "George Carlin": {
+     "auc": 0.9575596816976129,
+     "real": 29,
+     "fake": 26
+    },
+    "Gilbert Gottfried": {
+     "auc": 0.9574175824175825,
+     "real": 26,
+     "fake": 28
+    },
+    "John Cleese": {
+     "auc": 1.0,
+     "real": 29,
+     "fake": 28
+    },
+    "Kanye West": {
+     "auc": 1.0,
+     "real": 18,
+     "fake": 25
+    },
+    "Mark Zuckerberg": {
+     "auc": 1.0,
+     "real": 25,
+     "fake": 24
+    },
+    "Winston Churchill": {
+     "auc": 0.8907563025210085,
+     "real": 21,
+     "fake": 17
+    }
+   },
+   "check_clean_auc": 0.9503
+  },
+  {
    "id": "off:MelodyMachine/Deepfake-audio-detection-V2",
    "name": "Ready-made detector (Deepfake-audio-detection-V2)",
    "kind": "off-the-shelf",
@@ -623,7 +776,7 @@
  "best": "wavlm_both",
  "headline": "Our detector was right on 94% of clips on clean audio and 94% over a simulated phone line, on people it had never heard",
  "subhead": "A ready-made detector from the Hugging Face model hub was right on only 45% of the same clips. Tested on 604 clips from 12 people, half real and half AI-generated.",
- "method_html": "\n<ol style=\"margin:0; padding-left:1.2rem\">\n<li><b>Data.</b> The In-the-Wild collection: real and AI-faked recordings of 54 public figures, gathered from the internet by researchers at Fraunhofer AISEC. We made no fake audio ourselves.</li>\n<li><b>Sample.</b> Up to 30 real and 30 fake clips of 6 seconds per person: 2,310 clips in all.</li>\n<li><b>Split by person.</b> 34 people to train, 8 to choose settings, and 12 held back for the final test. No test person was used for any choice.</li>\n<li><b>Detectors.</b> WavLM and wav2vec 2.0 listen to the audio; a small classifier on top learns real against fake. One ready-made detector was tested as downloaded.</li>\n<li><b>Phone line.</b> Narrow band (300 to 3,400 Hz), 8 kHz sampling and standard phone compression. The demo has the same option.</li>\n<li><b>Score.</b> The chance that a random fake clip is rated more fake than a random real clip. 0.5 is guessing; 1 is perfect.</li>\n</ol>",
+ "method_html": "\n<ol style=\"margin:0; padding-left:1.2rem\">\n<li><b>Data.</b> The In-the-Wild collection: real and AI-faked recordings of 54 public figures, gathered from the internet by researchers at Fraunhofer AISEC. We made no fake audio ourselves.</li>\n<li><b>Sample.</b> Up to 30 real and 30 fake clips of 6 seconds per person: 2,310 clips in all.</li>\n<li><b>Split by person.</b> 34 people to train, 8 to choose settings, and 12 held back for the final test. No test person was used for any choice.</li>\n<li><b>Detectors.</b> WavLM, wav2vec 2.0 and Gemini Embedding 2 listen to the audio; a small classifier on top learns real against fake. One ready-made detector was tested as downloaded.</li>\n<li><b>Phone line.</b> Narrow band (300 to 3,400 Hz), 8 kHz sampling and standard phone compression. The demo has the same option.</li>\n<li><b>Score.</b> The chance that a random fake clip is rated more fake than a random real clip. 0.5 is guessing; 1 is perfect.</li>\n</ol>",
  "caveats_html": "\n<ul style=\"margin:0; padding-left:1.2rem\">\n<li><b>Recording differences.</b> In this collection, real and fake clips come from different sources, so part of any score may reflect how a clip was recorded, not whether the voice is synthetic. A trivial check using only loudness and tone balance scores 0.62, so some of the score may come from this.</li>\n<li><b>One collection.</b> Training and testing use the same kind of recordings. New voice generators and new recording settings are untested, and the ready-made detector shows how far results can fall.</li>\n<li><b>Real calls are mostly genuine.</b> Our test is half fake. If only 1 call in 1,000 is fake, a 5% false-alarm rate wrongly flags about 50 genuine callers for each fake caught.</li>\n<li><b>Few people.</b> 12 test people with about 50 clips each. Differences between people are not reliable.</li>\n<li><b>Simulated phone line.</b> Real calls add dropouts, noise and other compression.</li>\n<li><b>Voices and languages.</b> The people are mostly English-speaking figures from the US and UK. Indian voices and other languages are not yet tested.</li>\n<li><b>A signal, not proof.</b> Use the percentage alongside other checks, such as a call-back.</li>\n</ul>",
  "calibration": {
   "test_bins": [

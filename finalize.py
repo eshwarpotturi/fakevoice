@@ -12,6 +12,7 @@ names = {
     "wavlm_clean": "WavLM, trained on clean audio",
     "wavlm_both": "WavLM, trained on clean and phone-quality audio (used in the demo)",
     "w2v2_clean": "wav2vec 2.0, trained on clean audio",
+    "gemini_clean": "Gemini Embedding 2, trained on clean audio",
 }
 for d in R["detectors"]:
     if d["id"] in names:
@@ -42,7 +43,7 @@ R["method_html"] = f"""
 <li><b>Data.</b> The In-the-Wild collection: real and AI-faked recordings of 54 public figures, gathered from the internet by researchers at Fraunhofer AISEC. We made no fake audio ourselves.</li>
 <li><b>Sample.</b> Up to 30 real and 30 fake clips of 6 seconds per person: {c['train'] + c['check'] + c['test']:,} clips in all.</li>
 <li><b>Split by person.</b> {tr_sp} people to train, {c['check_speakers']} to choose settings, and {c['test_speakers']} held back for the final test. No test person was used for any choice.</li>
-<li><b>Detectors.</b> WavLM and wav2vec 2.0 listen to the audio; a small classifier on top learns real against fake. One ready-made detector was tested as downloaded.</li>
+<li><b>Detectors.</b> WavLM, wav2vec 2.0 and Gemini Embedding 2 listen to the audio; a small classifier on top learns real against fake. One ready-made detector was tested as downloaded.</li>
 <li><b>Phone line.</b> Narrow band (300 to 3,400 Hz), 8 kHz sampling and standard phone compression. The demo has the same option.</li>
 <li><b>Score.</b> The chance that a random fake clip is rated more fake than a random real clip. 0.5 is guessing; 1 is perfect.</li>
 </ol>"""

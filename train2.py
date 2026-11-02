@@ -159,6 +159,15 @@ def main():
         fit_eval("wav2vec 2.0, trained on clean audio", "trained", np.load("work/feat_w2v2.npy"), Xvp, key="w2v2_clean",
                  note="Trained only on clean recordings.")
 
+    # Gemini Embedding 2 (embedded through the company's LLM Foundry gateway by gemini_embed.py)
+    gdir = "work/gemini"
+    if os.path.isdir(gdir) and len(os.listdir(gdir)) >= len(man) + len(pm):
+        ld = lambda kind, m: np.load(f"{gdir}/{kind}_{m['file'].replace('.wav', '')}.npy")
+        Xg = np.stack([ld("clean", m) for m in man])[:, None, :]
+        Xgp = np.stack([ld("phone", m) for m in pm])[:, None, :]
+        fit_eval("Gemini Embedding 2, trained on clean audio", "trained", Xg, Xgp, key="gemini_clean",
+                 note="Gemini Embedding 2 turns each clip into 3,072 numbers; the same small classifier is trained on top, on clean recordings only.")
+
     # off-the-shelf detectors
     for f in sorted(glob.glob("work/offshelf_*.npy")):
         p = np.load(f)
