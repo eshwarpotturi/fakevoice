@@ -76,7 +76,7 @@ function toWavBlob(x) {
 // ---------- model ----------
 let loadingModel = null;
 async function loadModel() {
-  const r = await fetch("model/detector.onnx");
+  const r = await fetch("model/detector.onnx?v=2");
   if (!r.ok) throw new Error("model file not found (" + r.status + ")");
   const total = +r.headers.get("content-length") || 0, reader = r.body.getReader(), chunks = [];
   let got = 0;

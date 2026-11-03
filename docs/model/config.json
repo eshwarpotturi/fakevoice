@@ -4,9 +4,10 @@
  "floor": 0.05,
  "ceil": 0.99,
  "platt": {
-  "coef": 0.6908528377050996,
-  "intercept": -0.17332180086327087,
+  "coef": 0.8809952735900879,
+  "intercept": -0.3609161972999573,
   "threshold": 0.0
  },
- "reliability_html": "<b>How reliable is this?</b> On 12 people it had never heard, it was right on 94% of clean clips and 94% over a simulated phone line. It can still be fooled, and it has not been tested on Indian voices or languages other than English. Treat the percentage as one signal, not proof. <a href=\"stats.html\">See how well it works</a>."
+ "reliability_html": "<b>How reliable is this?</b> On voice generators it had never heard, it caught 78% of fakes and wrongly flagged 7% of real clips (83% and 9% over a simulated phone line). It wrongly flagged none of the real Indian-accented speech it was tested on. But it caught only 2 of 3 clones of one Indian-accented voice, and has not been tested on other languages. Treat the percentage as one signal, not proof. <a href=\"stats.html\">See how well it works</a>.",
+ "model_version": "v3: retrained on 5,760 clips from many datasets, with whole generators held out. Previous model: model/previous/"
 }

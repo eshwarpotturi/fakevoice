@@ -1,0 +1,12 @@
+{
+ "window_sec": 6,
+ "max_windows": 12,
+ "floor": 0.05,
+ "ceil": 0.99,
+ "platt": {
+  "coef": 0.6908528377050996,
+  "intercept": -0.17332180086327087,
+  "threshold": 0.0
+ },
+ "reliability_html": "<b>How reliable is this?</b> On 12 people it had never heard, it was right on 94% of clean clips and 94% over a simulated phone line. It can still be fooled, and it has not been tested on Indian voices or languages other than English. Treat the percentage as one signal, not proof. <a href=\"stats.html\">See how well it works</a>."
+}
