@@ -1,0 +1,17 @@
+family,model,auc,fake_caught,real_flagged,n_fake,n_real
+InTheWild,current demo,0.971,90,1,306,298
+InTheWild,v2 (mic speech),0.982,96,16,306,298
+InTheWild,v3 (final: + Indian accents),0.981,97,12,306,298
+InTheWild,"v3, phone line",0.978,98,15,306,298
+MLAAD,current demo,0.304,46,71,140,51
+MLAAD,v2 (mic speech),0.939,93,22,140,51
+MLAAD,v3 (final: + Indian accents),0.926,80,12,140,51
+MLAAD,"v3, phone line",0.902,81,18,140,51
+WaveFake,current demo,0.885,18,0,40,46
+WaveFake,v2 (mic speech),0.985,98,22,40,46
+WaveFake,v3 (final: + Indian accents),0.974,80,2,40,46
+WaveFake,"v3, phone line",0.984,90,4,40,46
+ASVspoof,current demo,0.876,58,6,43,51
+ASVspoof,v2 (mic speech),0.916,86,10,43,51
+ASVspoof,v3 (final: + Indian accents),0.899,70,6,43,51
+ASVspoof,"v3, phone line",0.922,81,10,43,51

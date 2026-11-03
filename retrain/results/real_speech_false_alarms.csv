@@ -1,0 +1,5 @@
+dataset,n,current_clean,v1_clean,v2_clean,v3_clean,current_phone,v3_phone
+AMI,250,4,6,5,1,7,3
+FLEURS,50,48,16,2,0,52,2
+IndianCV,46,43,89,72,0,46,2
+LibriSpeech,56,34,59,32,18,32,18
