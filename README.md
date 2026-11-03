@@ -2,8 +2,8 @@
 
 Tests whether detectors can tell AI-generated voices from real ones, on people they have never heard, including over a simulated phone line. Includes a demo that runs in your browser: play or upload a recording and see how likely it is to be AI-generated.
 
-**Live demo:** https://eshwarpotturi.github.io/fake-voice-check/
-**Results page:** https://eshwarpotturi.github.io/fake-voice-check/stats.html
+**Live demo:** https://eshwarpotturi.github.io/fakevoice/
+**Results page:** https://eshwarpotturi.github.io/fakevoice/stats.html
 
 Nothing you play or record is uploaded. The detector runs in your browser.
 
