@@ -186,15 +186,44 @@ function tableCal(host) {
   host.innerHTML = `<table class="data"><tr><th>When the detector said</th><th>Clips</th><th>Really fake</th></tr>${D.calibration.test_bins.map((b) => `<tr><td>${pct(b.lo)} to ${pct(b.hi)} AI</td><td>${b.n}</td><td>${pct(b.observed_fake)}</td></tr>`).join("")}</table>`;
 }
 
+
+// Two bars per row: the first version (orange) against the retrained detector (blue).
+function vizPairs(host, p) {
+  host.innerHTML = "";
+  const rows = p.rows, W = 780, left = 290, right = 70, top = 8, rowH = 74, H = top + rows.length * rowH + 40;
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, width: "100%", role: "img", "aria-label": p.aria }, host);
+  const x = (v) => left + v * (W - left - right);
+  [0, 0.5, 1].forEach((v) => {
+    el("line", { x1: x(v), x2: x(v), y1: top, y2: H - 32, stroke: "var(--line)", "stroke-dasharray": v === 0.5 ? "5 5" : "" }, svg);
+    const t = el("text", { x: x(v), y: H - 12, "text-anchor": "middle" }, svg); t.textContent = Math.round(v * 100) + "%";
+  });
+  rows.forEach((r, i) => {
+    const y0 = top + i * rowH;
+    const lab = el("text", { x: left - 12, y: y0 + 30, "text-anchor": "end", style: "font-size:14px" }, svg);
+    wrap(lab, r.name, y0 + 30, left - 16);
+    [[r.a, "var(--series-2)", p.la], [r.b, "var(--series-1)", p.lb]].forEach(([v, col, who], j) => {
+      const y = y0 + 6 + j * 28;
+      el("path", { d: barPath(x(0), y, Math.max(2, x(v) - x(0)), 24, 5), fill: col }, svg);
+      const t = el("text", { x: x(v) + 8, y: y + 17, class: "val", style: "font-size:15px" }, svg); t.textContent = pct(v);
+      const hit = el("rect", { x: x(0), y: y - 2, width: W - left - right, height: 28, fill: "transparent", class: "bar-hit" }, svg);
+      const html = `<b>${r.name}</b><br>${who}: ${pct(v)}${r.n ? `<br>${r.n}` : ""}`;
+      hit.addEventListener("mousemove", (e) => showTip(e, html)); hit.addEventListener("mouseleave", hideTip);
+    });
+  });
+}
+function tablePairs(host, p) {
+  host.innerHTML = p.html || `<table class="data"><tr><th></th><th>${p.la}</th><th>${p.lb}</th></tr>${p.rows.map((r) => `<tr><td>${r.name}</td><td>${pct(r.a)}</td><td>${pct(r.b)}</td></tr>`).join("")}</table>`;
+}
+
 // ---------- the story ----------
 function render() {
   const used = det("wavlm_both"), cl = det("wavlm_clean"), w2 = det("w2v2_clean"), gm = det("gemini_clean");
   const rd = D.detectors.find((d) => d.kind === "off-the-shelf");
   const n = D.counts, bins = D.calibration.test_bins, lo = bins[0], hi = bins[bins.length - 1];
   $("headline").textContent = "Can you tell a cloned voice from a real one?";
-  $("subhead").textContent = "A caller sounds just like your customer. We tested whether a detector can still tell it is a fake, on people it had never heard, even over a phone line.";
+  $("subhead").textContent = "A caller sounds just like your customer. We tested whether a detector can still tell it is a fake, on voices and generators it had never seen, even over a phone line.";
 
-  const chapters = [
+  const old = [
     { q: "Can it catch fakes of people it has never heard?", hero: pct(used.clean.accuracy),
       cap: `Right on ${n.test} clips from ${n.test_speakers} people held out of training. Half real, half fake.`,
       viz: (h) => vizWaffle(h, used.clean.accuracy), title: "Out of every 100 clips" },
@@ -222,17 +251,44 @@ function render() {
       fp: true, title: "Named the right person, no training" },
   ];
 
+  const V = D.v3, F = V.families, P = V.pooled, RS = V.real_speech;
+  const LA = "First version", LB = "Retrained";
+  const genHtml = `<table class="data"><tr><th>Held-out generator</th><th>Clips</th><th>First version</th><th>Retrained</th><th>Phone, first</th><th>Phone, retrained</th></tr>${V.generators.map((g) => `<tr><td>${g.family}: ${g.name}</td><td>${g.n}</td><td>${g.current_clean}%</td><td>${g.v3_clean}%</td><td>${g.current_phone}%</td><td>${g.v3_phone}%</td></tr>`).join("")}</table>`;
+  const fresh = [
+    { q: "Can it catch fakes from voice generators it has never seen?", hero: `<span class="from">${P.clean.current.caught}%</span><span class="arrow">→</span><span class="to">${P.clean.v3.caught}%</span>`,
+      cap: `Fakes caught on ${P.n_fake} clips from ${P.generators} generators held out of training. Over a simulated phone line: ${P.phone.v3.caught}%.`,
+      note: "Across all fakes, the score for telling fake from real rose from 0.59 to 0.94 (0.5 is a coin toss). Click Show table for each generator.",
+      pairs: { rows: F.map((f) => ({ name: f.name, a: f.current.caught / 100, b: f.v3.caught / 100, n: `${f.current.n_fake} fake clips` })), la: LA, lb: LB, aria: "Share of fakes caught, first version against retrained", html: genHtml }, title: "Fakes caught, by dataset" },
+    { q: "Does it call real voices fake?", hero: `<span class="from">${P.clean.current.flagged}%</span><span class="arrow">→</span><span class="to">${P.clean.v3.flagged}%</span>`,
+      cap: `Real clips wrongly flagged as AI, on the same held-out test sets (${P.n_real} real clips).`,
+      note: `Not everywhere: on the 12 people from the first test, wrongly flagged real clips rose from ${F[0].current.flagged}% to ${F[0].v3.flagged}%.`,
+      pairs: { rows: F.map((f) => ({ name: f.name, a: f.current.flagged / 100, b: f.v3.flagged / 100, n: `${f.current.n_real} real clips` })), la: LA, lb: LB, aria: "Share of real clips wrongly flagged, first version against retrained" }, title: "Real clips wrongly flagged as AI" },
+    { q: "What about real people on ordinary microphones?", hero: `<span class="from">${RS[0].current}%</span><span class="arrow">→</span><span class="to">${RS[0].v3}%</span>`,
+      cap: `Real Indian-accented English wrongly flagged (${RS[0].n} clips, speakers never seen in training). The first version flagged almost half. Meeting headsets, a source never seen in training: ${RS[1].current}% to ${RS[1].v3}%.`,
+      note: `Noisy audiobook recordings are still hard: ${RS[3].v3}% wrongly flagged.`,
+      pairs: { rows: RS.map((r) => ({ name: r.name, a: r.current / 100, b: r.v3 / 100, n: `${r.n} real clips` })), la: LA, lb: LB, aria: "Share of real speech wrongly flagged, first version against retrained" }, title: "Real speech wrongly flagged as AI" },
+    { q: "Does it catch a clone of an Indian-accented voice?", hero: "2 of 3", heroClass: "bad",
+      cap: `Three clones of one person's voice, made with an open model: 2 of 3 caught on clean audio, 1 of 3 over a simulated phone line. The first version caught 3 of 3 on clean audio. The real recording is called human (${V.own.real.v3}% AI).`,
+      note: "Our reading: no fake Indian-accent voices were in training, so the accent may count as a sign of a real voice. Three clips cannot show this. The next step is to train on accent-matched fakes.",
+      pairs: { rows: V.own.clones.map((c, i) => ({ name: `Clone ${i + 1}: called AI, clean audio`, a: c.current / 100, b: c.v3 / 100 })), la: LA, lb: LB, aria: "How AI each clone looked, first version against retrained" }, title: "How AI each clone looked" },
+    { q: "Can you trust the percentage?", hero: pct(bins[0].observed_fake), heroClass: "bad",
+      cap: `of clips it was sure were human (under 5% AI) were fake. Of those it was sure were fake (over 95%): ${pct(hi.observed_fake)}.`,
+      note: "So the demo never shows less than 5% AI.", cal: true, title: "What it said, against what was true" },
+  ];
+  const chapters = [...fresh, ...old.filter((c) => !c.cal).map((c) => ({ ...c, q: "First test: " + c.q }))];
+
   const host = $("chapters"); host.innerHTML = "";
   chapters.forEach((c) => {
     const sec = document.createElement("section"); sec.className = "chapter";
     sec.innerHTML = `<div><h3 class="q">${c.q}</h3><div class="hero ${c.heroClass || ""}">${c.hero}</div><p class="cap">${c.cap}</p>${c.note ? `<p class="note">${c.note}</p>` : ""}</div>
-      <div class="card"><div class="vizhead"><span>${c.title}</span>${c.viz && !c.rows ? "" : '<button class="btn tb">Show table</button>'}</div>${c.rows ? '<div class="legend"><span><i style="background:var(--series-1)"></i>Clean audio</span><span><i style="background:var(--series-2)"></i>Phone-quality audio</span></div>' : ""}${c.fp ? '<div class="legend"><span><i style="background:var(--series-1)"></i>12 people</span><span><i style="background:var(--series-2)"></i>49 people</span></div>' : ""}<div class="viz"></div></div>`;
+      <div class="card"><div class="vizhead"><span>${c.title}</span>${c.viz && !c.rows ? "" : '<button class="btn tb">Show table</button>'}</div>${c.rows ? '<div class="legend"><span><i style="background:var(--series-1)"></i>Clean audio</span><span><i style="background:var(--series-2)"></i>Phone-quality audio</span></div>' : ""}${c.pairs ? `<div class="legend"><span><i style="background:var(--series-2)"></i>${c.pairs.la}</span><span><i style="background:var(--series-1)"></i>${c.pairs.lb}</span></div>` : ""}${c.fp ? '<div class="legend"><span><i style="background:var(--series-1)"></i>12 people</span><span><i style="background:var(--series-2)"></i>49 people</span></div>' : ""}<div class="viz"></div></div>`;
     host.appendChild(sec);
     const viz = sec.querySelector(".viz"), btn = sec.querySelector(".tb");
     let chart, table;
     if (c.viz) { chart = () => c.viz(viz); }
     if (c.rows) { chart = () => vizAccuracy(viz, c.rows); table = () => tableAccuracy(viz, c.rows); }
     if (c.person) { chart = () => vizPerson(viz); table = () => tablePerson(viz); }
+    if (c.pairs) { chart = () => vizPairs(viz, c.pairs); table = () => tablePairs(viz, c.pairs); }
     if (c.cal) { chart = () => vizCal(viz); table = () => tableCal(viz); }
     if (c.fp) { chart = () => vizFingerprint(viz); table = () => tableFingerprint(viz); }
     chart();

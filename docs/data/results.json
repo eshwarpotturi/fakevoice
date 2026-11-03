@@ -774,63 +774,63 @@
   }
  ],
  "best": "wavlm_both",
- "headline": "Our detector was right on 94% of clips on clean audio and 94% over a simulated phone line, on people it had never heard",
- "subhead": "A ready-made detector from the Hugging Face model hub was right on only 45% of the same clips. Tested on 604 clips from 12 people, half real and half AI-generated.",
- "method_html": "\n<ol>\n<li><b>Data.</b> Real and AI-faked recordings of 54 public figures, gathered from the internet by researchers. We made no fake audio.</li>\n<li><b>Sample.</b> Up to 30 real and 30 fake 6-second clips per person: 2,310 clips.</li>\n<li><b>Split by person.</b> 34 people to train, 8 to choose settings, 12 held back for the test.</li>\n<li><b>Detectors.</b> WavLM, wav2vec 2.0 and Gemini Embedding 2 listen; a small classifier learns real against fake. One ready-made detector was tested as downloaded.</li>\n<li><b>Phone line.</b> 300 to 3,400 Hz, 8 kHz, standard phone compression.</li>\n</ol>",
- "caveats_html": "\n<ul>\n<li><b>Recording differences.</b> Real and fake clips come from different sources, so part of the score may reflect the recording, not the voice. A loudness-only check scores 0.62 (0.5 is guessing).</li>\n<li><b>One collection.</b> English-speaking public figures. New voice generators, Indian voices, other languages and real calls are untested.</li>\n<li><b>Modern clones.</b> A small test of three open-model clones of one person's voice: all 3 caught on clean audio, 1 to 2 of 3 over a simulated phone line.</li>\n<li><b>Real calls are mostly genuine.</b> If 1 call in 1,000 is fake, a 5% false-alarm rate flags about 50 genuine callers per fake caught.</li>\n<li><b>Few people.</b> 12 test people, about 50 clips each.</li>\n<li><b>A signal, not proof.</b> Use it with other checks, such as a call-back.</li>\n</ul>",
+ "headline": "Can a detector catch voice generators it has never seen?",
+ "subhead": "On new generators it caught 78% of fakes, up from 43%, and wrongly flagged 7% of real clips, down from 34%. But it caught only 2 of 3 clones of one Indian-accented voice.",
+ "method_html": "\n<ol>\n<li><b>Data.</b> 5,760 six-second clips. Fakes: recordings of 54 public figures collected from the internet by researchers, 69 named speech generators (MLAAD), 11 vocoder sets (WaveFake) and 13 attacks (ASVspoof 2021). Real: the same public figures, audiobooks, crowd recordings (FLEURS), meeting headsets (AMI), Indian-accented English (Common Voice) and one studio voice (LJSpeech). We made no fake audio.</li>\n<li><b>Split by whole generator.</b> About 20% of the generators in each dataset were held out for the test, 10% to choose settings, and the rest to train. Real clips were split by speaker or book. The AMI meeting set was held out entirely.</li>\n<li><b>Detector.</b> WavLM listens; a small classifier on its fifth layer learns real against fake, trained on clean and phone-quality copies. Eight layers, three regularisation strengths and seven training lengths were compared on the check split only. The test split was used once.</li>\n<li><b>Phone line.</b> 300 to 3,400 Hz, 8 kHz, standard phone compression.</li>\n<li><b>First test.</b> The charts further down are the first version, tested on 12 held-out people from the first dataset only.</li>\n</ol>",
+ "caveats_html": "\n<ul>\n<li><b>Fakes in an Indian accent.</b> Three clones of one Indian-accented voice: 2 of 3 caught on clean audio, 1 of 3 over a simulated phone line. The first version caught 3 of 3 on clean audio. No fake Indian-accent voices were in training, so the detector may treat the accent as a sign of a real voice. Three clips cannot show this.</li>\n<li><b>Small tests.</b> 223 fake clips from 19 held-out generators, 10 to 20 clips each. Indian-accent real speech: 46 clips.</li>\n<li><b>Still missed.</b> Two Japanese vocoder sets, and some modern generators (Llasa-8B, Cartesia Sonic-3, Kyutai, minimax, ASVspoof attacks A12 and A16), are caught on under 70% of clips.</li>\n<li><b>More false alarms on the first dataset.</b> On the first 12 people, real clips wrongly flagged rose from 1% to 12%.</li>\n<li><b>Recording differences.</b> Real and fake clips mostly come from different sources, so part of any score may reflect the recording, not the voice.</li>\n<li><b>Real calls are mostly genuine.</b> If 1 call in 1,000 is fake, a 7% false-alarm rate wrongly flags about 70 genuine callers for each fake call.</li>\n<li><b>Languages.</b> English only. Other languages and real phone calls are untested.</li>\n<li><b>A signal, not proof.</b> Use it with other checks, such as a call-back.</li>\n</ul>",
  "calibration": {
   "test_bins": [
    {
     "lo": 0,
     "hi": 0.05,
-    "n": 547,
-    "observed_fake": 0.0603290676416819,
-    "predicted": 0.005693807210400982
+    "n": 253,
+    "observed_fake": 0.036,
+    "predicted": 0.019
    },
    {
     "lo": 0.05,
     "hi": 0.2,
-    "n": 64,
-    "observed_fake": 0.296875,
-    "predicted": 0.0929868291716118
+    "n": 197,
+    "observed_fake": 0.066,
+    "predicted": 0.111
    },
    {
     "lo": 0.2,
     "hi": 0.4,
-    "n": 23,
-    "observed_fake": 0.30434782608695654,
-    "predicted": 0.3005279403538516
+    "n": 104,
+    "observed_fake": 0.183,
+    "predicted": 0.304
    },
    {
     "lo": 0.4,
     "hi": 0.6,
-    "n": 22,
-    "observed_fake": 0.5,
-    "predicted": 0.4958116515478508
+    "n": 88,
+    "observed_fake": 0.443,
+    "predicted": 0.499
    },
    {
     "lo": 0.6,
     "hi": 0.8,
-    "n": 25,
-    "observed_fake": 0.8,
-    "predicted": 0.7189996892504545
+    "n": 73,
+    "observed_fake": 0.63,
+    "predicted": 0.705
    },
    {
     "lo": 0.8,
     "hi": 0.95,
-    "n": 62,
-    "observed_fake": 0.9193548387096774,
-    "predicted": 0.8854554532379258
+    "n": 114,
+    "observed_fake": 0.939,
+    "predicted": 0.89
    },
    {
     "lo": 0.95,
     "hi": 1.0,
-    "n": 465,
-    "observed_fake": 1.0,
-    "predicted": 0.9948512775411382
+    "n": 298,
+    "observed_fake": 0.993,
+    "predicted": 0.988
    }
   ],
-  "note": "When the detector sounded sure a clip was human (under 5%), about 6 in 100 were actually fake. The demo therefore never shows less than 5% AI. When it sounded sure a clip was fake (over 95%), all of them were."
+  "note": "When the detector sounded sure a clip was human (under 5%), about 4 in 100 were actually fake. The demo therefore never shows less than 5% AI. When it sounded sure a clip was fake (over 95%), 99 in 100 were."
  },
  "fingerprint": [
   {
@@ -855,5 +855,393 @@
    "same_auc": 0.8895691418509546,
    "same_eer": 0.18274401071525775
   }
- ]
+ ],
+ "v3": {
+  "pooled": {
+   "clean": {
+    "current": {
+     "auc": 0.591,
+     "caught": 43,
+     "flagged": 34
+    },
+    "v3": {
+     "auc": 0.942,
+     "caught": 78,
+     "flagged": 7
+    }
+   },
+   "phone": {
+    "current": {
+     "auc": 0.564,
+     "caught": 42,
+     "flagged": 36
+    },
+    "v3": {
+     "auc": 0.944,
+     "caught": 83,
+     "flagged": 9
+    }
+   },
+   "n_fake": 223,
+   "n_real": 300,
+   "generators": 19
+  },
+  "families": [
+   {
+    "name": "Original dataset (12 people)",
+    "key": "InTheWild",
+    "current": {
+     "auc": 0.971,
+     "caught": 90,
+     "flagged": 1,
+     "n_fake": 306,
+     "n_real": 298
+    },
+    "v3": {
+     "auc": 0.981,
+     "caught": 97,
+     "flagged": 12,
+     "n_fake": 306,
+     "n_real": 298
+    },
+    "v3_phone": {
+     "auc": 0.978,
+     "caught": 98,
+     "flagged": 15,
+     "n_fake": 306,
+     "n_real": 298
+    }
+   },
+   {
+    "name": "MLAAD (14 new generators)",
+    "key": "MLAAD",
+    "current": {
+     "auc": 0.304,
+     "caught": 46,
+     "flagged": 71,
+     "n_fake": 140,
+     "n_real": 51
+    },
+    "v3": {
+     "auc": 0.926,
+     "caught": 80,
+     "flagged": 12,
+     "n_fake": 140,
+     "n_real": 51
+    },
+    "v3_phone": {
+     "auc": 0.902,
+     "caught": 81,
+     "flagged": 18,
+     "n_fake": 140,
+     "n_real": 51
+    }
+   },
+   {
+    "name": "WaveFake (2 new vocoders)",
+    "key": "WaveFake",
+    "current": {
+     "auc": 0.885,
+     "caught": 18,
+     "flagged": 0,
+     "n_fake": 40,
+     "n_real": 46
+    },
+    "v3": {
+     "auc": 0.974,
+     "caught": 80,
+     "flagged": 2,
+     "n_fake": 40,
+     "n_real": 46
+    },
+    "v3_phone": {
+     "auc": 0.984,
+     "caught": 90,
+     "flagged": 4,
+     "n_fake": 40,
+     "n_real": 46
+    }
+   },
+   {
+    "name": "ASVspoof (3 new attacks)",
+    "key": "ASVspoof",
+    "current": {
+     "auc": 0.876,
+     "caught": 58,
+     "flagged": 6,
+     "n_fake": 43,
+     "n_real": 51
+    },
+    "v3": {
+     "auc": 0.899,
+     "caught": 70,
+     "flagged": 6,
+     "n_fake": 43,
+     "n_real": 51
+    },
+    "v3_phone": {
+     "auc": 0.922,
+     "caught": 81,
+     "flagged": 10,
+     "n_fake": 43,
+     "n_real": 51
+    }
+   }
+  ],
+  "real_speech": [
+   {
+    "name": "Meeting headsets, AMI (unseen source)",
+    "n": 250,
+    "current": 4,
+    "v3": 1,
+    "current_phone": 7,
+    "v3_phone": 3
+   },
+   {
+    "name": "FLEURS crowd recordings",
+    "n": 50,
+    "current": 48,
+    "v3": 0,
+    "current_phone": 52,
+    "v3_phone": 2
+   },
+   {
+    "name": "Indian-accented English (unseen speakers)",
+    "n": 46,
+    "current": 43,
+    "v3": 0,
+    "current_phone": 46,
+    "v3_phone": 2
+   },
+   {
+    "name": "LibriSpeech noisy recordings",
+    "n": 56,
+    "current": 34,
+    "v3": 18,
+    "current_phone": 32,
+    "v3_phone": 18
+   }
+  ],
+  "generators": [
+   {
+    "family": "ASVspoof",
+    "name": "A12",
+    "n": 14,
+    "current_clean": 79,
+    "v3_clean": 64,
+    "current_phone": 79,
+    "v3_phone": 86
+   },
+   {
+    "family": "ASVspoof",
+    "name": "A15",
+    "n": 15,
+    "current_clean": 67,
+    "v3_clean": 100,
+    "current_phone": 87,
+    "v3_phone": 100
+   },
+   {
+    "family": "ASVspoof",
+    "name": "A16",
+    "n": 14,
+    "current_clean": 29,
+    "v3_clean": 43,
+    "current_phone": 43,
+    "v3_phone": 57
+   },
+   {
+    "family": "MLAAD",
+    "name": "Cartesia.ai (Sonic-3)",
+    "n": 10,
+    "current_clean": 40,
+    "v3_clean": 50,
+    "current_phone": 60,
+    "v3_phone": 60
+   },
+   {
+    "family": "MLAAD",
+    "name": "Kitten-TTS-Nano-0.1",
+    "n": 10,
+    "current_clean": 70,
+    "v3_clean": 100,
+    "current_phone": 60,
+    "v3_phone": 100
+   },
+   {
+    "family": "MLAAD",
+    "name": "Kyutai-TTS",
+    "n": 10,
+    "current_clean": 30,
+    "v3_clean": 50,
+    "current_phone": 20,
+    "v3_phone": 70
+   },
+   {
+    "family": "MLAAD",
+    "name": "Llasa-8B",
+    "n": 10,
+    "current_clean": 0,
+    "v3_clean": 20,
+    "current_phone": 0,
+    "v3_phone": 50
+   },
+   {
+    "family": "MLAAD",
+    "name": "Mars5",
+    "n": 10,
+    "current_clean": 60,
+    "v3_clean": 80,
+    "current_phone": 50,
+    "v3_phone": 80
+   },
+   {
+    "family": "MLAAD",
+    "name": "Metavoice-1B",
+    "n": 10,
+    "current_clean": 80,
+    "v3_clean": 100,
+    "current_phone": 90,
+    "v3_phone": 100
+   },
+   {
+    "family": "MLAAD",
+    "name": "Step-Audio-EditX",
+    "n": 10,
+    "current_clean": 50,
+    "v3_clean": 90,
+    "current_phone": 40,
+    "v3_phone": 80
+   },
+   {
+    "family": "MLAAD",
+    "name": "Veena",
+    "n": 10,
+    "current_clean": 60,
+    "v3_clean": 90,
+    "current_phone": 50,
+    "v3_phone": 80
+   },
+   {
+    "family": "MLAAD",
+    "name": "f5-tts",
+    "n": 10,
+    "current_clean": 30,
+    "v3_clean": 90,
+    "current_phone": 40,
+    "v3_phone": 90
+   },
+   {
+    "family": "MLAAD",
+    "name": "facebook_mms-tts-deu",
+    "n": 10,
+    "current_clean": 60,
+    "v3_clean": 100,
+    "current_phone": 40,
+    "v3_phone": 100
+   },
+   {
+    "family": "MLAAD",
+    "name": "minimax_speech-2.6-hd",
+    "n": 10,
+    "current_clean": 30,
+    "v3_clean": 60,
+    "current_phone": 30,
+    "v3_phone": 50
+   },
+   {
+    "family": "MLAAD",
+    "name": "orpheus-tts-0.1-finetune",
+    "n": 10,
+    "current_clean": 20,
+    "v3_clean": 100,
+    "current_phone": 0,
+    "v3_phone": 100
+   },
+   {
+    "family": "MLAAD",
+    "name": "suno_bark",
+    "n": 10,
+    "current_clean": 40,
+    "v3_clean": 90,
+    "current_phone": 40,
+    "v3_phone": 90
+   },
+   {
+    "family": "MLAAD",
+    "name": "suno_bark-small",
+    "n": 10,
+    "current_clean": 70,
+    "v3_clean": 100,
+    "current_phone": 70,
+    "v3_phone": 90
+   },
+   {
+    "family": "WaveFake",
+    "name": "jsut_multi_band_melgan",
+    "n": 20,
+    "current_clean": 20,
+    "v3_clean": 10,
+    "current_phone": 60,
+    "v3_phone": 15
+   },
+   {
+    "family": "WaveFake",
+    "name": "jsut_parallel_wavegan",
+    "n": 20,
+    "current_clean": 30,
+    "v3_clean": 0,
+    "current_phone": 55,
+    "v3_phone": 40
+   },
+   {
+    "family": "WaveFake",
+    "name": "ljspeech_hifiGAN",
+    "n": 20,
+    "current_clean": 5,
+    "v3_clean": 70,
+    "current_phone": 5,
+    "v3_phone": 85
+   },
+   {
+    "family": "WaveFake",
+    "name": "ljspeech_multi_band_melgan",
+    "n": 20,
+    "current_clean": 30,
+    "v3_clean": 90,
+    "current_phone": 15,
+    "v3_phone": 95
+   }
+  ],
+  "own": {
+   "real": {
+    "current": 10,
+    "v3": 5,
+    "v3_phone": 5
+   },
+   "clones": [
+    {
+     "current": 97,
+     "v3": 60,
+     "v3_phone": 34
+    },
+    {
+     "current": 93,
+     "v3": 74,
+     "v3_phone": 61
+    },
+    {
+     "current": 93,
+     "v3": 20,
+     "v3_phone": 8
+    }
+   ]
+  },
+  "counts": {
+   "clips": 5760,
+   "train": 3669,
+   "check": 674,
+   "test": 1417
+  }
+ }
 }
