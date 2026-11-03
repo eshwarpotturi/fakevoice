@@ -84,7 +84,7 @@ async function loadModel() {
     const { done, value } = await reader.read();
     if (done) break;
     chunks.push(value); got += value.length;
-    $("status").textContent = `Loading the detector… ${(got / 1e6).toFixed(0)} of ${total ? (total / 1e6).toFixed(0) : "about 58"} MB`;
+    $("status").textContent = `Loading the detector… ${(got / 1e6).toFixed(0)} of ${total ? (total / 1e6).toFixed(0) : "about 86"} MB`;
   }
   const buf = new Uint8Array(got); let o = 0;
   for (const c of chunks) { buf.set(c, o); o += c.length; }
