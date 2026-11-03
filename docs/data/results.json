@@ -163,7 +163,7 @@
   },
   {
    "id": "wavlm_both",
-   "name": "WavLM, trained on clean and phone-quality audio (used in the demo)",
+   "name": "WavLM, trained on clean and phone-quality audio (first version)",
    "kind": "trained",
    "layer": 3,
    "C": 1.0,
@@ -990,6 +990,14 @@
   ],
   "real_speech": [
    {
+    "name": "Indian-accented English (unseen speakers)",
+    "n": 46,
+    "current": 43,
+    "v3": 0,
+    "current_phone": 46,
+    "v3_phone": 2
+   },
+   {
     "name": "Meeting headsets, AMI (unseen source)",
     "n": 250,
     "current": 4,
@@ -1003,14 +1011,6 @@
     "current": 48,
     "v3": 0,
     "current_phone": 52,
-    "v3_phone": 2
-   },
-   {
-    "name": "Indian-accented English (unseen speakers)",
-    "n": 46,
-    "current": 43,
-    "v3": 0,
-    "current_phone": 46,
     "v3_phone": 2
    },
    {
